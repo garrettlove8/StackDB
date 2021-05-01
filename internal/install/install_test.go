@@ -15,7 +15,7 @@ var _ = Describe("Install", func() {
 	Describe("Installing StackDB", func() {
 		Context("When completed successfully", func() {
 			It("should return nil", func() {
-				Expect(install.CheckIntall()).To(BeNil())
+				Expect(install.Intall()).To(BeNil())
 			})
 		})
 	})

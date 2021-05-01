@@ -1,28 +1,28 @@
 package install
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 )
 
-const (
-	version = "0.1"
-)
-
-func CheckIntall() error {
+// Intall handles the entire install process. This inlcudes
+// checking if the database is already installed. If not,
+// it kicks off the installation process. However, if it
+// was already installed it returns nil allowing for the
+// database to start up normally.
+func Intall() error {
 	if _, err := os.Stat("./stackdb"); os.IsExist(err) {
-		return err
+		return nil
 	}
 
 	err := setupDirStructure()
 	if err != nil {
-		fmt.Println("Unable to setup directory structure: ", err)
+		return err
 	}
 
 	file, err := touchConfigFile()
 	if err != nil {
-		fmt.Println("Unable to touch config file: ", err)
+		return err
 	}
 
 	err = writeInitialConfig(file)
@@ -70,7 +70,7 @@ func touchConfigFile() (*os.File, error) {
 
 func writeInitialConfig(file *os.File) error {
 	pwd, _ := os.Getwd()
-	configFile, err := ioutil.ReadFile(pwd + "/configs/" + version + "/stackdb.yaml")
+	configFile, err := ioutil.ReadFile(pwd + "/configs/" + os.Getenv("VERSION") + "/stackdb.yaml")
 	if err != nil {
 		return err
 	}

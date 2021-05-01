@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"StackDB/internal/install"
+	"fmt"
+)
 
 func main() {
 	fmt.Println("StackDB says hello!")
+	install.CheckIntall()
 }

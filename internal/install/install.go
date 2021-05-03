@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-type manager interface {
+type database interface {
 	Create() error
 }
 
@@ -14,7 +14,7 @@ type manager interface {
 // it kicks off the installation process. However, if it
 // was already installed it returns nil allowing for the
 // database to start up normally.
-func Intall(manager manager) error {
+func Intall(database database) error {
 	if _, err := os.Stat("./stackdb"); os.IsExist(err) {
 		return nil
 	}
@@ -34,7 +34,7 @@ func Intall(manager manager) error {
 		return err
 	}
 
-	manager.Create()
+	database.Create()
 
 	return nil
 }

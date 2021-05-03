@@ -1,25 +1,39 @@
 package database
 
 import (
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
 	"os"
+
+	"github.com/google/uuid"
 )
 
 type Database struct {
-	Id   string
-	Name string
-	Type string
+	Id          string       `json:"id"`
+	Name        string       `json:"name"`
+	Type        string       `json:"type"`
+	Collections []Collection `json:"collections"`
 }
 
-func (db *Database) Create() error {
-	fmt.Println("database:Create:db: ", db)
+type Collection struct {
+	Id   string      `json:"id"`
+	Name string      `json:"name"`
+	Data interface{} `json:"data"`
+}
 
+// Create creates a new database using the database struct that it is passed.
+func (db *Database) Create() error {
 	err := createDatabaseDir(db.Name)
 	if err != nil {
 		return err
 	}
 
-	err = createDbFile(*db)
+	file, err := createDbFile(db.Name)
+	if err != nil {
+		return err
+	}
+
+	err = writeDbFile(file, *db)
 	if err != nil {
 		return err
 	}
@@ -50,16 +64,43 @@ func createCollectionsDir(dbName string) error {
 	return nil
 }
 
-func createDbFile(db Database) error {
-	file, err := os.Create("./stackdb/data/" + db.Name + "/database.json")
+func createDbFile(name string) (*os.File, error) {
+	file, err := os.Create("./stackdb/data/" + name + "/database.json")
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
+}
+
+func writeDbFile(file *os.File, db Database) error {
+	// Get the base db json file and convert its contents into a byte array
+	pwd, _ := os.Getwd()
+	content, _ := ioutil.ReadFile(pwd + "/configs/" + os.Getenv("VERSION") + "/baseDbFile.json")
+	contentBytes := []byte(content)
+
+	// Convert byte array into instance of Database struct for manipulation using Go
+	var database Database
+	if err := json.Unmarshal(contentBytes, &database); err != nil {
+		return err
+	}
+
+	// Now that we have a instance of a database struct, we can assign the values we want
+	database.Id = uuid.New().String()
+	database.Name = db.Name
+	database.Type = db.Type
+
+	// Convert database struct back to json
+	databaseJson, err := json.Marshal(database)
 	if err != nil {
 		return err
 	}
 
-	content := fmt.Sprintf("{\n\t\"uuid\": \"%s\", \n\t\"name\": \"%s\", \n\t\"type\": \"%s\"\n}", db.Id, db.Name, db.Type)
-	contentBytes := []byte(content)
+	// Convert database json back to a byte array so it can be written to the database file
+	databaseBytes := []byte(databaseJson)
 
-	_, err = file.Write(contentBytes)
+	// Write database byte array to database file
+	_, err = file.Write(databaseBytes)
 	if err != nil {
 		return err
 	}

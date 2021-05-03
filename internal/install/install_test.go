@@ -1,6 +1,7 @@
 package install_test
 
 import (
+	"StackDB/internal/database"
 	"StackDB/internal/install"
 	"os"
 
@@ -15,7 +16,10 @@ var _ = Describe("Install", func() {
 	Describe("Installing StackDB", func() {
 		Context("When completed successfully", func() {
 			It("should return nil", func() {
-				Expect(install.Intall()).To(BeNil())
+				manager := database.Database{
+					Name: "system",
+				}
+				Expect(install.Intall(&manager)).To(BeNil())
 			})
 		})
 	})

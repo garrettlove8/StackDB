@@ -5,6 +5,7 @@ import (
 	"StackDB/internal/install"
 	"os"
 
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -16,10 +17,12 @@ var _ = Describe("Install", func() {
 	Describe("Installing StackDB", func() {
 		Context("When completed successfully", func() {
 			It("should return nil", func() {
-				manager := database.Database{
+				systemDb := database.Database{
+					Id:   uuid.New().String(),
 					Name: "system",
+					Type: "keyValue",
 				}
-				Expect(install.Intall(&manager)).To(BeNil())
+				Expect(install.Intall(&systemDb)).To(BeNil())
 			})
 		})
 	})

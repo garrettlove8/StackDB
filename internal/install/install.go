@@ -5,12 +5,16 @@ import (
 	"os"
 )
 
+type database interface {
+	Create() error
+}
+
 // Intall handles the entire install process. This inlcudes
 // checking if the database is already installed. If not,
 // it kicks off the installation process. However, if it
 // was already installed it returns nil allowing for the
 // database to start up normally.
-func Intall() error {
+func Intall(database database) error {
 	if _, err := os.Stat("./stackdb"); os.IsExist(err) {
 		return nil
 	}
@@ -26,6 +30,11 @@ func Intall() error {
 	}
 
 	err = writeInitialConfig(file)
+	if err != nil {
+		return err
+	}
+
+	database.Create()
 
 	return nil
 }
@@ -46,7 +55,7 @@ func setupDirStructure() error {
 		return err
 	}
 
-	err = os.MkdirAll("./stackdb/data/system", 0777)
+	err = os.MkdirAll("./stackdb/data", 0777)
 	if err != nil {
 		return err
 	}
@@ -60,7 +69,7 @@ func setupDirStructure() error {
 }
 
 func touchConfigFile() (*os.File, error) {
-	file, err := os.Create("./stackdb/config/stackdb.yaml")
+	file, err := os.Create("./stackdb/config/stackdb.json")
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +79,7 @@ func touchConfigFile() (*os.File, error) {
 
 func writeInitialConfig(file *os.File) error {
 	pwd, _ := os.Getwd()
-	configFile, err := ioutil.ReadFile(pwd + "/configs/" + os.Getenv("VERSION") + "/stackdb.yaml")
+	configFile, err := ioutil.ReadFile(pwd + "/configs/" + os.Getenv("VERSION") + "/stackdb.json")
 	if err != nil {
 		return err
 	}

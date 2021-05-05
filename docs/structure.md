@@ -35,6 +35,7 @@ Within each database file is the following:
 }
 ```
 
+## Collection
 Within each collection file is the following:
 ```json
 {

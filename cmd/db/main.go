@@ -18,5 +18,9 @@ func main() {
 		Name: "system",
 		Type: "keyValue",
 	}
-	install.Intall(&systemDb)
+	databasesCol := database.Collection{
+		Id:   uuid.New().String(),
+		Name: "databases",
+	}
+	install.Intall(&systemDb, &databasesCol)
 }

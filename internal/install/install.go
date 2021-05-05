@@ -1,12 +1,17 @@
 package install
 
 import (
+	"StackDB/internal/database"
 	"io/ioutil"
 	"os"
 )
 
-type database interface {
-	Create() error
+type db interface {
+	CreateDatabase() (*database.Database, error)
+}
+
+type collection interface {
+	CreateCollection(string) error
 }
 
 // Intall handles the entire install process. This inlcudes
@@ -14,7 +19,7 @@ type database interface {
 // it kicks off the installation process. However, if it
 // was already installed it returns nil allowing for the
 // database to start up normally.
-func Intall(database database) error {
+func Intall(database db, collection collection) error {
 	if _, err := os.Stat("./stackdb"); os.IsExist(err) {
 		return nil
 	}
@@ -34,7 +39,12 @@ func Intall(database database) error {
 		return err
 	}
 
-	database.Create()
+	newDb, err := database.CreateDatabase()
+	if err != nil {
+		return err
+	}
+
+	collection.CreateCollection(newDb.Name)
 
 	return nil
 }

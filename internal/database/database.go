@@ -15,35 +15,29 @@ type Database struct {
 	Collections []Collection `json:"collections"`
 }
 
-type Collection struct {
-	Id   string      `json:"id"`
-	Name string      `json:"name"`
-	Data interface{} `json:"data"`
-}
-
 // Create creates a new database using the database struct that it is passed.
-func (db *Database) Create() error {
+func (db *Database) CreateDatabase() (*Database, error) {
 	err := createDatabaseDir(db.Name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	file, err := createDbFile(db.Name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = writeDbFile(file, *db)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = createCollectionsDir(db.Name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return db, nil
 }
 
 func createDatabaseDir(dbName string) error {

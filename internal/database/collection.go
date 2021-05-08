@@ -13,19 +13,7 @@ type Collection struct {
 	Data map[string]interface{} `json:"data"`
 }
 
-func LoadCollection(dbName string) (*Database, error) {
-	var database Database
-	dataBytes := readDbFile(dbName)
-
-	err := json.Unmarshal(dataBytes, &database)
-	if err != nil {
-		return nil, err
-	}
-
-	return &database, nil
-}
-
-func (c *Collection) CreateCollection(dbName string) error {
+func (c *Collection) Create(dbName string) error {
 	fmt.Println("collection:Create:c: ", c)
 
 	// Open database file
@@ -38,17 +26,16 @@ func (c *Collection) CreateCollection(dbName string) error {
 	contentBytes := []byte(content)
 
 	// Unmarshal database file to Database struct
-	var dbFileStruct Database
-	if err := json.Unmarshal(contentBytes, &dbFileStruct); err != nil {
+	db, err := decodeDbFile(contentBytes)
+	if err != nil {
 		return err
 	}
 
 	// Add collection to database collections slice
-	dbFileStruct.Collections = append(dbFileStruct.Collections, c.Name)
-	fmt.Printf("dbFileStruct: %s\n", dbFileStruct.Collections)
+	db.Collections = append(db.Collections, c.Name)
 
 	file, err := os.OpenFile(pwd+"/stackdb/data/"+dbName+"/database.json", os.O_WRONLY, os.ModeAppend)
-	err = saveDbFile(file, dbFileStruct)
+	err = saveDbFile(file, *db)
 	if err != nil {
 		fmt.Printf("saveDbFile: %v\n", err)
 		return err
@@ -79,14 +66,31 @@ func (c *Collection) CreateCollection(dbName string) error {
 	return nil
 }
 
-func readColFile(dbName string, colName string) []byte {
-	fmt.Println("./stackdb/data/" + dbName + "/" + colName + ".json")
-	contentBytes, _ := ioutil.ReadFile("./stackdb/data/" + dbName + "/collections/" + colName + ".json")
-
-	return contentBytes
+func (c *Collection) Read() (*Collection, error) {
+	return c, nil
 }
 
-func encodeColFile(data []byte) (*Collection, error) {
+func (c *Collection) Edit() (*Collection, error) {
+	return c, nil
+}
+func (c *Collection) Delete() (*Collection, error) {
+	return c, nil
+}
+func (c *Collection) Search() (*[]Data, error) {
+	data := make([]Data, 0)
+	return &data, nil
+}
+
+func readColFile(dbName string, colName string) ([]byte, error) {
+	contentBytes, err := ioutil.ReadFile("./stackdb/data/" + dbName + "/collections/" + colName + ".json")
+	if err != nil {
+		return nil, err
+	}
+
+	return contentBytes, nil
+}
+
+func decodeColFile(data []byte) (*Collection, error) {
 	var collection Collection
 
 	err := json.Unmarshal(data, &collection)

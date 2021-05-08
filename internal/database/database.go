@@ -16,9 +16,8 @@ type Database struct {
 }
 
 // Create creates a new database using the database struct that it is passed.
-func (db *Database) CreateDatabase() (*Database, error) {
-	err := createDatabaseDir(db.Name)
-	if err != nil {
+func (db *Database) Create() (*Database, error) {
+	if err := createDatabaseDir(db.Name); err != nil {
 		return nil, err
 	}
 
@@ -27,22 +26,40 @@ func (db *Database) CreateDatabase() (*Database, error) {
 		return nil, err
 	}
 
-	err = writeDbFile(file, *db)
-	if err != nil {
+	if err = writeDbFile(file, *db); err != nil {
 		return nil, err
 	}
 
-	err = createCollectionsDir(db.Name)
-	if err != nil {
+	if err = createCollectionsDir(db.Name); err != nil {
 		return nil, err
 	}
 
 	return db, nil
 }
 
+func (db *Database) Read() (*Database, error) {
+	return db, nil
+}
+
+func (db *Database) Edit() (*Database, error) {
+	return db, nil
+}
+
+func (db *Database) Delete() (*Database, error) {
+	return db, nil
+}
+
+func (db *Database) Load() (*Database, error) {
+	return db, nil
+}
+
+func (db *Database) Search() (*[]Data, error) {
+	data := make([]Data, 0)
+	return &data, nil
+}
+
 func createDatabaseDir(dbName string) error {
-	err := os.MkdirAll("./stackdb/data/"+dbName, 0777)
-	if err != nil {
+	if err := os.MkdirAll("./stackdb/data/"+dbName, 0777); err != nil {
 		return err
 	}
 
@@ -50,16 +67,15 @@ func createDatabaseDir(dbName string) error {
 }
 
 func createCollectionsDir(dbName string) error {
-	err := os.MkdirAll("./stackdb/data/"+dbName+"/collections", 0777)
-	if err != nil {
+	if err := os.MkdirAll("./stackdb/data/"+dbName+"/collections", 0777); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func createDbFile(name string) (*os.File, error) {
-	file, err := os.Create("./stackdb/data/" + name + "/database.json")
+func createDbFile(dbName string) (*os.File, error) {
+	file, err := os.Create("./stackdb/data/" + dbName + "/database.json")
 	if err != nil {
 		return nil, err
 	}
@@ -67,10 +83,24 @@ func createDbFile(name string) (*os.File, error) {
 	return file, nil
 }
 
-func readDbFile(dbName string) []byte {
-	contentBytes, _ := ioutil.ReadFile("./stackdb/data/" + dbName + "/database.json")
+func readDbFile(dbName string) ([]byte, error) {
+	contentBytes, err := ioutil.ReadFile("./stackdb/data/" + dbName + "/database.json")
+	if err != nil {
+		return nil, err
+	}
 
-	return contentBytes
+	return contentBytes, nil
+}
+
+func decodeDbFile(data []byte) (*Database, error) {
+	var database Database
+
+	err := json.Unmarshal(data, &database)
+	if err != nil {
+		return nil, err
+	}
+
+	return &database, nil
 }
 
 func writeDbFile(file *os.File, db Database) error {
@@ -80,10 +110,7 @@ func writeDbFile(file *os.File, db Database) error {
 	contentBytes := []byte(content)
 
 	// Convert byte array into instance of Database struct for manipulation using Go
-	var database Database
-	if err := json.Unmarshal(contentBytes, &database); err != nil {
-		return err
-	}
+	database, err := decodeDbFile(contentBytes)
 
 	// Now that we have a instance of a database struct, we can assign the values we want
 	database.Id = uuid.New().String()

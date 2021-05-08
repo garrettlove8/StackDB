@@ -2,16 +2,17 @@ package install
 
 import (
 	"StackDB/internal/database"
+	"fmt"
 	"io/ioutil"
 	"os"
 )
 
 type db interface {
-	CreateDatabase() (*database.Database, error)
+	Create() (*database.Database, error)
 }
 
 type collection interface {
-	CreateCollection(string) error
+	Create(string) error
 }
 
 // Intall handles the entire install process. This inlcudes
@@ -20,9 +21,12 @@ type collection interface {
 // was already installed it returns nil allowing for the
 // database to start up normally.
 func Intall(database db, collection collection) error {
-	if _, err := os.Stat("./stackdb"); os.IsExist(err) {
+	if _, err := os.Stat("./stackdb"); !os.IsNotExist(err) {
+		fmt.Println("SHOULD EXIT", err)
 		return nil
 	}
+
+	fmt.Println("DID NOT EXIT")
 
 	err := setupDirStructure()
 	if err != nil {
@@ -39,12 +43,12 @@ func Intall(database db, collection collection) error {
 		return err
 	}
 
-	newDb, err := database.CreateDatabase()
+	newDb, err := database.Create()
 	if err != nil {
 		return err
 	}
 
-	collection.CreateCollection(newDb.Name)
+	collection.Create(newDb.Name)
 
 	return nil
 }

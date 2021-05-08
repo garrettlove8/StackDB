@@ -30,4 +30,6 @@ func main() {
 		Name: "system",
 	}
 	system.Load()
+
+	fmt.Println("main:system: ", system)
 }

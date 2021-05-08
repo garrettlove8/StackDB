@@ -1,7 +1,5 @@
 package database
 
-import "encoding/json"
-
 type ActiveDatabase struct {
 	Id          string
 	Name        string
@@ -10,32 +8,25 @@ type ActiveDatabase struct {
 	Collections []Collection
 }
 
-func (ad *ActiveDatabase) Load() error {
-	db, err := loadDatabase(ad.Name)
+func (ad *ActiveDatabase) Load() (*ActiveDatabase, error) {
+	data, err := readDbFile(ad.Name)
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	db, err := decodeDbFile(data)
+	if err != nil {
+		return nil, err
 	}
 
 	ad.Id = db.Id
 	ad.Type = db.Type
 
 	for _, v := range db.Collections {
-		data := readColFile(db.Name, v)
-		col, _ := encodeColFile(data)
+		data, _ := readColFile(db.Name, v)
+		col, _ := decodeColFile(data)
 		ad.Collections = append(ad.Collections, *col)
 	}
 
-	return nil
-}
-
-func loadDatabase(dbName string) (*Database, error) {
-	var database Database
-	dataBytes := readDbFile(dbName)
-
-	err := json.Unmarshal(dataBytes, &database)
-	if err != nil {
-		return nil, err
-	}
-
-	return &database, nil
+	return ad, nil
 }

@@ -9,10 +9,10 @@ import (
 )
 
 type Database struct {
-	Id          string       `json:"id"`
-	Name        string       `json:"name"`
-	Type        string       `json:"type"`
-	Collections []Collection `json:"collections"`
+	Id          string   `json:"id"`
+	Name        string   `json:"name"`
+	Type        string   `json:"type"`
+	Collections []string `json:"collections"`
 }
 
 // Create creates a new database using the database struct that it is passed.
@@ -65,6 +65,12 @@ func createDbFile(name string) (*os.File, error) {
 	}
 
 	return file, nil
+}
+
+func readDbFile(dbName string) []byte {
+	contentBytes, _ := ioutil.ReadFile("./stackdb/data/" + dbName + "/database.json")
+
+	return contentBytes
 }
 
 func writeDbFile(file *os.File, db Database) error {

@@ -13,6 +13,18 @@ type Collection struct {
 	Data map[string]interface{} `json:"data"`
 }
 
+func LoadCollection(dbName string) (*Database, error) {
+	var database Database
+	dataBytes := readDbFile(dbName)
+
+	err := json.Unmarshal(dataBytes, &database)
+	if err != nil {
+		return nil, err
+	}
+
+	return &database, nil
+}
+
 func (c *Collection) CreateCollection(dbName string) error {
 	fmt.Println("collection:Create:c: ", c)
 
@@ -32,7 +44,7 @@ func (c *Collection) CreateCollection(dbName string) error {
 	}
 
 	// Add collection to database collections slice
-	dbFileStruct.Collections = append(dbFileStruct.Collections, *c)
+	dbFileStruct.Collections = append(dbFileStruct.Collections, c.Name)
 	fmt.Printf("dbFileStruct: %s\n", dbFileStruct.Collections)
 
 	file, err := os.OpenFile(pwd+"/stackdb/data/"+dbName+"/database.json", os.O_WRONLY, os.ModeAppend)
@@ -65,6 +77,24 @@ func (c *Collection) CreateCollection(dbName string) error {
 	file.Sync()
 
 	return nil
+}
+
+func readColFile(dbName string, colName string) []byte {
+	fmt.Println("./stackdb/data/" + dbName + "/" + colName + ".json")
+	contentBytes, _ := ioutil.ReadFile("./stackdb/data/" + dbName + "/collections/" + colName + ".json")
+
+	return contentBytes
+}
+
+func encodeColFile(data []byte) (*Collection, error) {
+	var collection Collection
+
+	err := json.Unmarshal(data, &collection)
+	if err != nil {
+		return nil, err
+	}
+
+	return &collection, nil
 }
 
 func saveDbFile(file *os.File, db Database) error {

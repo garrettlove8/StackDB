@@ -9,6 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
+var activeDatabase database.ActiveDatabase
+
 func main() {
 	fmt.Println("StackDB says hello!")
 	utils.GetEnv()
@@ -23,4 +25,9 @@ func main() {
 		Name: "databases",
 	}
 	install.Intall(&systemDb, &databasesCol)
+
+	system := database.ActiveDatabase{
+		Name: "system",
+	}
+	system.Load()
 }

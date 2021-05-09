@@ -2,31 +2,31 @@ package install
 
 import (
 	"StackDB/internal/database"
-	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/google/uuid"
 )
-
-type db interface {
-	Create() (*database.Database, error)
-}
-
-type collection interface {
-	Create(string) error
-}
 
 // Intall handles the entire install process. This inlcudes
 // checking if the database is already installed. If not,
 // it kicks off the installation process. However, if it
 // was already installed it returns nil allowing for the
 // database to start up normally.
-func Intall(database db, collection collection) error {
+func Intall() error {
 	if _, err := os.Stat("./stackdb"); !os.IsNotExist(err) {
-		fmt.Println("SHOULD EXIT", err)
 		return nil
 	}
 
-	fmt.Println("DID NOT EXIT")
+	db := database.Database{
+		Id:   uuid.New().String(),
+		Name: "system",
+		Type: "keyValue",
+	}
+	col := database.Collection{
+		Id:   uuid.New().String(),
+		Name: "databases",
+	}
 
 	err := setupDirStructure()
 	if err != nil {
@@ -43,12 +43,12 @@ func Intall(database db, collection collection) error {
 		return err
 	}
 
-	newDb, err := database.Create()
+	newDb, err := db.Create()
 	if err != nil {
 		return err
 	}
 
-	collection.Create(newDb.Name)
+	col.Create(newDb.Name)
 
 	return nil
 }

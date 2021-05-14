@@ -9,10 +9,20 @@ import (
 )
 
 type Database struct {
-	Id          string   `json:"id"`
-	Name        string   `json:"name"`
-	Type        string   `json:"type"`
-	Collections []string `json:"collections"`
+	Uuid        string       `json:"uuid"`
+	Name        string       `json:"name"`
+	Type        string       `json:"type"`
+	CTime       string       `json:"cTime"`
+	MTime       string       `json:"mTime"`
+	Collections []Collection `json:"collections"`
+}
+
+type DatabaseMeta struct {
+	Uuid  string `json:"uuid"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	CTime string `json:"cTime"`
+	MTime string `json:"mTime"`
 }
 
 // Create creates a new database using the database struct that it is passed.
@@ -37,25 +47,62 @@ func (db *Database) Create() (*Database, error) {
 	return db, nil
 }
 
-func (db *Database) Read() (*Database, error) {
-	return db, nil
+func (db *Database) Insert(colName string, data *Data) (*Data, error) {
+	return data, nil
 }
 
-func (db *Database) Edit() (*Database, error) {
-	return db, nil
+func (db *Database) Read() (*DatabaseMeta, error) {
+	meta := DatabaseMeta{
+		Uuid: db.Uuid,
+		Name: db.Name,
+		Type: db.Type,
+	}
+	return &meta, nil
 }
 
-func (db *Database) Delete() (*Database, error) {
-	return db, nil
+func (db *Database) Edit(newDatabase *Database) (*DatabaseMeta, error) {
+	db.Name = newDatabase.Name
+
+	meta := DatabaseMeta{
+		Uuid:  db.Uuid,
+		Name:  db.Name,
+		Type:  db.Type,
+		CTime: db.CTime,
+		MTime: db.MTime,
+	}
+	return &meta, nil
+}
+
+func (db *Database) Delete() error {
+	return nil
 }
 
 func (db *Database) Load() (*Database, error) {
+	data, err := readDbFile(db.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	db, err = decodeDbFile(data)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range db.Collections {
+		data, _ := readColFile(db.Name, v.Name)
+		col, _ := decodeColFile(data)
+		db.Collections = append(db.Collections, *col)
+	}
+
 	return db, nil
 }
 
-func (db *Database) Search() (*[]Data, error) {
-	data := make([]Data, 0)
-	return &data, nil
+func (db *Database) Search(data *Data) (*[]Data, error) {
+	dataSlice := make([]Data, 0)
+
+	dataSlice[0] = Data{}
+
+	return &dataSlice, nil
 }
 
 func createDatabaseDir(dbName string) error {
@@ -113,7 +160,7 @@ func writeDbFile(file *os.File, db Database) error {
 	database, err := decodeDbFile(contentBytes)
 
 	// Now that we have a instance of a database struct, we can assign the values we want
-	database.Id = uuid.New().String()
+	database.Uuid = uuid.New().String()
 	database.Name = db.Name
 	database.Type = db.Type
 

@@ -19,12 +19,12 @@ func Intall() error {
 	}
 
 	db := database.Database{
-		Id:   uuid.New().String(),
+		Uuid: uuid.New().String(),
 		Name: "system",
 		Type: "keyValue",
 	}
 	col := database.Collection{
-		Id:   uuid.New().String(),
+		Uuid: uuid.New().String(),
 		Name: "databases",
 	}
 

@@ -6,3 +6,8 @@ test:
 
 clean:
 	rm -rf ./stackdb
+	rm -rf ./sdb
+	go clean
+
+build:
+	go build

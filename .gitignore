@@ -15,4 +15,5 @@
 # vendor/
 
 # Custom
-stackdb/
+StackDB
+sdb/

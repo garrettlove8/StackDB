@@ -8,9 +8,18 @@ import (
 )
 
 type Collection struct {
-	Id   string                 `json:"id"`
-	Name string                 `json:"name"`
-	Data map[string]interface{} `json:"data"`
+	Uuid  string            `json:"uuid"`
+	Name  string            `json:"name"`
+	CTime string            `json:"cTime"`
+	MTime string            `json:"mTime"`
+	Data  map[string][]Data `json:"data"`
+}
+
+type CollectionMeta struct {
+	Uuid  string `json:"uuid"`
+	Name  string `json:"name"`
+	CTime string `json:"cTime"`
+	MTime string `json:"mTime"`
 }
 
 func (c *Collection) Create(dbName string) error {
@@ -32,7 +41,7 @@ func (c *Collection) Create(dbName string) error {
 	}
 
 	// Add collection to database collections slice
-	db.Collections = append(db.Collections, c.Name)
+	db.Collections = append(db.Collections, *c)
 
 	file, err := os.OpenFile(pwd+"/stackdb/data/"+dbName+"/database.json", os.O_WRONLY, os.ModeAppend)
 	err = saveDbFile(file, *db)
@@ -66,19 +75,28 @@ func (c *Collection) Create(dbName string) error {
 	return nil
 }
 
-func (c *Collection) Read() (*Collection, error) {
-	return c, nil
+func (c *Collection) Read() (*CollectionMeta, error) {
+	meta := CollectionMeta{
+		Uuid:  c.Uuid,
+		Name:  c.Name,
+		CTime: c.CTime,
+		MTime: c.MTime,
+	}
+	return &meta, nil
 }
 
-func (c *Collection) Edit() (*Collection, error) {
-	return c, nil
+func (c *Collection) Edit() (*CollectionMeta, error) {
+	meta := CollectionMeta{
+		Uuid:  c.Uuid,
+		Name:  c.Name,
+		CTime: c.CTime,
+		MTime: c.MTime,
+	}
+	return &meta, nil
 }
-func (c *Collection) Delete() (*Collection, error) {
-	return c, nil
-}
-func (c *Collection) Search() (*[]Data, error) {
-	data := make([]Data, 0)
-	return &data, nil
+
+func (c *Collection) Delete() error {
+	return nil
 }
 
 func readColFile(dbName string, colName string) ([]byte, error) {

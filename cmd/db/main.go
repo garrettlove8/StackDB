@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-var activeDatabase database.ActiveDatabase
+var activeDatabase database.Database
 
 func main() {
 	utils.GetEnv()
@@ -17,7 +17,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	system := database.ActiveDatabase{
+	system := database.Database{
 		Name: "system",
 	}
 	system.Load()

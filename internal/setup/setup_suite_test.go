@@ -1,4 +1,4 @@
-package install_test
+package setup_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestInstall(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Install Suite")
+	RunSpecs(t, "Setup Suite")
 }

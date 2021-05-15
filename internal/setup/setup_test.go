@@ -1,7 +1,7 @@
-package install_test
+package setup_test
 
 import (
-	"StackDB/internal/install"
+	"StackDB/internal/setup"
 	"StackDB/internal/utils"
 	"os"
 
@@ -9,18 +9,18 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Install", func() {
+var _ = Describe("Setup", func() {
 	BeforeEach(func() {
 		os.Chdir("../../")
 		utils.GetEnv()
 	})
 	AfterEach(func() {
-		os.RemoveAll("./stackdb")
+		os.RemoveAll("./sdb")
 	})
-	Describe("Installing StackDB", func() {
+	Describe("Setup StackDB", func() {
 		Context("When completed successfully", func() {
 			It("should return nil", func() {
-				Expect(install.Intall()).To(BeNil())
+				Expect(setup.Setup()).To(BeNil())
 			})
 		})
 	})

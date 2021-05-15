@@ -100,7 +100,7 @@ func (c *Collection) Delete() error {
 }
 
 func readColFile(dbName string, colName string) ([]byte, error) {
-	contentBytes, err := ioutil.ReadFile("./stackdb/data/" + dbName + "/collections/" + colName + ".json")
+	contentBytes, err := ioutil.ReadFile("./sdb/data/" + dbName + "/collections/" + colName + ".json")
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func saveDbFile(file *os.File, db Database) error {
 }
 
 func createColFile(dbName string, colName string) (*os.File, error) {
-	file, err := os.Create("./stackdb/data/" + dbName + "/collections" + "/" + colName + ".json")
+	file, err := os.Create("./sdb/data/" + dbName + "/collections" + "/" + colName + ".json")
 	if err != nil {
 		return nil, err
 	}

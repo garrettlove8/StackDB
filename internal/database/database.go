@@ -106,7 +106,7 @@ func (db *Database) Search(data *Data) (*[]Data, error) {
 }
 
 func createDatabaseDir(dbName string) error {
-	if err := os.MkdirAll("./stackdb/data/"+dbName, 0777); err != nil {
+	if err := os.MkdirAll("./sdb/data/"+dbName, 0777); err != nil {
 		return err
 	}
 
@@ -114,7 +114,7 @@ func createDatabaseDir(dbName string) error {
 }
 
 func createCollectionsDir(dbName string) error {
-	if err := os.MkdirAll("./stackdb/data/"+dbName+"/collections", 0777); err != nil {
+	if err := os.MkdirAll("./sdb/data/"+dbName+"/collections", 0777); err != nil {
 		return err
 	}
 
@@ -122,7 +122,7 @@ func createCollectionsDir(dbName string) error {
 }
 
 func createDbFile(dbName string) (*os.File, error) {
-	file, err := os.Create("./stackdb/data/" + dbName + "/database.json")
+	file, err := os.Create("./sdb/data/" + dbName + "/database.json")
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func createDbFile(dbName string) (*os.File, error) {
 }
 
 func readDbFile(dbName string) ([]byte, error) {
-	contentBytes, err := ioutil.ReadFile("./stackdb/data/" + dbName + "/database.json")
+	contentBytes, err := ioutil.ReadFile("./sdb/data/" + dbName + "/database.json")
 	if err != nil {
 		return nil, err
 	}

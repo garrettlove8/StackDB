@@ -1,20 +1,22 @@
-package install
+package setup
 
 import (
 	"StackDB/internal/database"
+	"fmt"
 	"io/ioutil"
 	"os"
 
 	"github.com/google/uuid"
 )
 
-// Intall handles the entire install process. This inlcudes
+// Setup handles the entire install process. This inlcudes
 // checking if the database is already installed. If not,
 // it kicks off the installation process. However, if it
 // was already installed it returns nil allowing for the
 // database to start up normally.
-func Intall() error {
-	if _, err := os.Stat("./stackdb"); !os.IsNotExist(err) {
+func Setup() error {
+	if isSetup := CheckSetup(); isSetup {
+		fmt.Println("StackDB has already been setup")
 		return nil
 	}
 
@@ -54,27 +56,27 @@ func Intall() error {
 }
 
 func setupDirStructure() error {
-	err := os.MkdirAll("./stackdb/logs/transaction", 0777)
+	err := os.MkdirAll("./sdb/logs/transaction", 0777)
 	if err != nil {
 		return err
 	}
 
-	err = os.MkdirAll("./stackdb/logs/debug", 0777)
+	err = os.MkdirAll("./sdb/logs/debug", 0777)
 	if err != nil {
 		return err
 	}
 
-	err = os.MkdirAll("./stackdb/logs/stats", 0777)
+	err = os.MkdirAll("./sdb/logs/stats", 0777)
 	if err != nil {
 		return err
 	}
 
-	err = os.MkdirAll("./stackdb/data", 0777)
+	err = os.MkdirAll("./sdb/data", 0777)
 	if err != nil {
 		return err
 	}
 
-	err = os.MkdirAll("./stackdb/config", 0777)
+	err = os.MkdirAll("./sdb/config", 0777)
 	if err != nil {
 		return err
 	}
@@ -82,8 +84,16 @@ func setupDirStructure() error {
 	return nil
 }
 
+func CheckSetup() bool {
+	if _, err := os.Stat("./sdb"); !os.IsNotExist(err) {
+		return true
+	}
+
+	return false
+}
+
 func touchConfigFile() (*os.File, error) {
-	file, err := os.Create("./stackdb/config/stackdb.json")
+	file, err := os.Create("./sdb/config/stackdb.json")
 	if err != nil {
 		return nil, err
 	}

@@ -40,7 +40,7 @@ var createDatabaseCmd = &cobra.Command{
 			return fmt.Errorf("The word \"system\" is reserved for StackDB usage")
 		}
 
-		if args[1] == "keyValue" {
+		if args[1] != "keyValue" {
 			return fmt.Errorf("Unsupported database type")
 		}
 

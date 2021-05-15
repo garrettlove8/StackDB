@@ -27,7 +27,7 @@ func (c *Collection) Create(dbName string) error {
 
 	// Open database file
 	pwd, _ := os.Getwd()
-	content, err := ioutil.ReadFile(pwd + "/stackdb/data/" + dbName + "/database.json")
+	content, err := ioutil.ReadFile(pwd + "/sdb/data/" + dbName + "/database.json")
 	if err != nil {
 		fmt.Println("Unable to open database file: ", err)
 		return err
@@ -43,7 +43,7 @@ func (c *Collection) Create(dbName string) error {
 	// Add collection to database collections slice
 	db.Collections = append(db.Collections, *c)
 
-	file, err := os.OpenFile(pwd+"/stackdb/data/"+dbName+"/database.json", os.O_WRONLY, os.ModeAppend)
+	file, err := os.OpenFile(pwd+"/sdb/data/"+dbName+"/database.json", os.O_WRONLY, os.ModeAppend)
 	err = saveDbFile(file, *db)
 	if err != nil {
 		fmt.Printf("saveDbFile: %v\n", err)

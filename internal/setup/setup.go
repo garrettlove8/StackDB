@@ -55,6 +55,16 @@ func Setup() error {
 	return nil
 }
 
+// CheckSetup checks to see if the StackDB setup process has been
+// previously run.
+func CheckSetup() bool {
+	if _, err := os.Stat("./sdb"); !os.IsNotExist(err) {
+		return true
+	}
+
+	return false
+}
+
 func setupDirStructure() error {
 	err := os.MkdirAll("./sdb/logs/transaction", 0777)
 	if err != nil {
@@ -82,14 +92,6 @@ func setupDirStructure() error {
 	}
 
 	return nil
-}
-
-func CheckSetup() bool {
-	if _, err := os.Stat("./sdb"); !os.IsNotExist(err) {
-		return true
-	}
-
-	return false
 }
 
 func touchConfigFile() (*os.File, error) {

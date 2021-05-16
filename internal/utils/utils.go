@@ -6,6 +6,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// GetEnv gets the correct environment variables.
+// It is executed at the very beginning of running the database.
 func GetEnv() {
 	err := godotenv.Load()
 	if err != nil {

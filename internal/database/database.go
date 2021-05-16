@@ -8,15 +8,34 @@ import (
 	"github.com/google/uuid"
 )
 
+// Database is a Go represenation of an on disk database.
 type Database struct {
-	Uuid        string       `json:"uuid"`
-	Name        string       `json:"name"`
-	Type        string       `json:"type"`
-	CTime       string       `json:"cTime"`
-	MTime       string       `json:"mTime"`
+	// Uuid (Universal Unique Identifier) is the ID for a database.
+	// This field is internally managed and included in a database's meta data.
+	Uuid string `json:"uuid"`
+
+	// Name is the name of a database. As the developer, you'll use this field often.
+	Name string `json:"name"`
+
+	// Type is the type of database. Currently, only key value (keyValue) databases
+	// are supported.
+	Type string `json:"type"`
+
+	// CTime (Creation Time) is the time at which a database was created.
+	// This field is internally managed and included in a database's meta data.
+	CTime string `json:"cTime"`
+
+	// MTime (Modified Time) is the time at which a database was last changed.
+	// This field is internally managed and included in a database's meta data.
+	MTime string `json:"mTime"`
+
+	// Collections are the actual collection (and the data held within them) within a database.
 	Collections []Collection `json:"collections"`
 }
 
+// DatabaseMeta is the meta data representation of a database.
+// All fields within DatabaseMeta follow the same rules, guidelines, and usage
+// as they do in the Database type.
 type DatabaseMeta struct {
 	Uuid  string `json:"uuid"`
 	Name  string `json:"name"`
@@ -25,7 +44,7 @@ type DatabaseMeta struct {
 	MTime string `json:"mTime"`
 }
 
-// Create creates a new database using the database struct that it is passed.
+// Create creates a new database using the data from the database type instance it is called on.
 func (db *Database) Create() (*Database, error) {
 	if err := createDatabaseDir(db.Name); err != nil {
 		return nil, err
@@ -47,10 +66,12 @@ func (db *Database) Create() (*Database, error) {
 	return db, nil
 }
 
+// Insert inserts data into a database it is called on.
 func (db *Database) Insert(colName string, data *Data) (*Data, error) {
 	return data, nil
 }
 
+// Read provides access to a database's meta data.
 func (db *Database) Read() (*DatabaseMeta, error) {
 	meta := DatabaseMeta{
 		Uuid: db.Uuid,
@@ -60,6 +81,7 @@ func (db *Database) Read() (*DatabaseMeta, error) {
 	return &meta, nil
 }
 
+// Edit provides a way to edit a database's meta data.
 func (db *Database) Edit(newDatabase *Database) (*DatabaseMeta, error) {
 	db.Name = newDatabase.Name
 
@@ -73,10 +95,14 @@ func (db *Database) Edit(newDatabase *Database) (*DatabaseMeta, error) {
 	return &meta, nil
 }
 
+// Delete provides a way to delete a database, as well as all its contents.
 func (db *Database) Delete() error {
 	return nil
 }
 
+// Load loads a database into memory from usage. It is used when activating
+// a database for use by an application, the shell, or CLI, as well as when
+// StackDB is first started up to load the system database.
 func (db *Database) Load() (*Database, error) {
 	data, err := readDbFile(db.Name)
 	if err != nil {

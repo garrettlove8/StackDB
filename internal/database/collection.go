@@ -10,19 +10,19 @@ import (
 // Collections are the same as those in many NoSQL database and are akin to tables in relational databases.
 // They privde an easy and logical way to separate data with a database
 type Collection struct {
-	// Uuid (Universal Unique Identifier) is the ID for a given collection.
-	// This field is internally managed and included in a collection's meta data
+	// Uuid (Universal Unique Identifier) is the ID for a collection.
+	// This field is internally managed and included in a collection's meta data.
 	Uuid string `json:"uuid"`
 
-	// Name is the name of a given collection. As the developer, you'll use this field often.
+	// Name is the name of a collection. As the developer, you'll use this field often.
 	Name string `json:"name"`
 
-	// CTime (Creation Time) is the time at which the collection was created.
-	// This field is internally managed and included in a collection's meta data
+	// CTime (Creation Time) is the time at which a collection was created.
+	// This field is internally managed and included in a collection's meta data.
 	CTime string `json:"cTime"`
 
-	// CTime (Modified Time) is the time at which the collection was last changed.
-	// This field is internally managed and included in a collection's meta data
+	// MTime (Modified Time) is the time at which a collection was last changed.
+	// This field is internally managed and included in a collection's meta data.
 	MTime string `json:"mTime"`
 
 	// Data is the data held within a collection.
@@ -31,7 +31,7 @@ type Collection struct {
 
 // CollectionMeta is the meta data representation of a collection.
 // All fields within CollectionMeta follow the same rules, guidelines, and usage
-// as they do in the Collection type
+// as they do in the Collection type.
 type CollectionMeta struct {
 	Uuid  string `json:"uuid"`
 	Name  string `json:"name"`
@@ -95,7 +95,7 @@ func (c *Collection) Create(dbName string) error {
 	return nil
 }
 
-// Read provides access to a collection's meta data
+// Read provides access to a collection's meta data.
 func (c *Collection) Read() (*CollectionMeta, error) {
 	meta := CollectionMeta{
 		Uuid:  c.Uuid,
@@ -106,7 +106,7 @@ func (c *Collection) Read() (*CollectionMeta, error) {
 	return &meta, nil
 }
 
-// Edit provides a way to edit a collection's meta data
+// Edit provides a way to edit a collection's meta data.
 func (c *Collection) Edit() (*CollectionMeta, error) {
 	meta := CollectionMeta{
 		Uuid:  c.Uuid,
@@ -117,7 +117,7 @@ func (c *Collection) Edit() (*CollectionMeta, error) {
 	return &meta, nil
 }
 
-// Delete provides a way to delete a collection for a database
+// Delete provides a way to delete a collection from a database.
 func (c *Collection) Delete() error {
 	return nil
 }

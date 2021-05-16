@@ -1,6 +1,11 @@
 # StackDB
 A stackable database that provides extreme flexibility, self-management, high performance, low cost, and puts cloud native first
 
+![License](https://img.shields.io/github/license/garrettlove8/StackDB)
+[![Go Report Card](https://goreportcard.com/badge/github.com/garrettlove8/StackDB)](https://goreportcard.com/report/github.com/garrettlove8/StackDB)
+![Workflow](https://img.shields.io/github/workflow/status/garrettlove8/StackDB/Test%20and%20Build)
+
+
 ## Install and Setup
 To install and setup StackDB, you first want to download the desired reslease version from [here](https://github.com/garrettlove8/StackDB/releases). After that's complete, run the following commands:
 

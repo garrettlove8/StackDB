@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -21,13 +22,17 @@ func Setup() error {
 	}
 
 	db := database.Database{
-		Uuid: uuid.New().String(),
-		Name: "system",
-		Type: "keyValue",
+		Uuid:  uuid.New().String(),
+		Name:  "stackdb",
+		Type:  "keyValue",
+		CTime: time.Now().String(),
+		MTime: time.Now().String(),
 	}
 	col := database.Collection{
-		Uuid: uuid.New().String(),
-		Name: "databases",
+		Uuid:  uuid.New().String(),
+		Name:  "databases",
+		CTime: time.Now().String(),
+		MTime: time.Now().String(),
 	}
 
 	err := setupDirStructure()

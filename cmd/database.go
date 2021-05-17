@@ -3,6 +3,7 @@ package cmd
 import (
 	"StackDB/internal/database"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -36,8 +37,8 @@ var createDatabaseCmd = &cobra.Command{
 			return fmt.Errorf("Not enough arguments")
 		}
 
-		if args[0] == "system" {
-			return fmt.Errorf("The word \"system\" is reserved for StackDB usage")
+		if args[0] == "stackdb" {
+			return fmt.Errorf("The word \"stackdb\" is reserved for StackDB usage")
 		}
 
 		if args[1] != "keyValue" {
@@ -45,8 +46,10 @@ var createDatabaseCmd = &cobra.Command{
 		}
 
 		newDatabase := database.Database{
-			Name: args[0],
-			Type: args[1],
+			Name:  args[0],
+			Type:  args[1],
+			CTime: time.Now().String(),
+			MTime: time.Now().String(),
 		}
 
 		_, err := newDatabase.Create()

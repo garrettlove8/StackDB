@@ -46,20 +46,12 @@ type DatabaseMeta struct {
 
 // Create creates a new database using the data from the database type instance it is called on.
 func (db *Database) Create() (*Database, error) {
-	if err := createDatabaseDir(db.Name); err != nil {
-		return nil, err
-	}
-
 	file, err := createDbFile(db.Name)
 	if err != nil {
 		return nil, err
 	}
 
 	if err = writeDbFile(file, *db); err != nil {
-		return nil, err
-	}
-
-	if err = createCollectionsDir(db.Name); err != nil {
 		return nil, err
 	}
 
@@ -114,12 +106,6 @@ func (db *Database) Load() (*Database, error) {
 		return nil, err
 	}
 
-	for _, v := range db.Collections {
-		data, _ := readColFile(db.Name, v.Name)
-		col, _ := decodeColFile(data)
-		db.Collections = append(db.Collections, *col)
-	}
-
 	return db, nil
 }
 
@@ -131,24 +117,8 @@ func (db *Database) Search(data *Data) (*[]Data, error) {
 	return &dataSlice, nil
 }
 
-func createDatabaseDir(dbName string) error {
-	if err := os.MkdirAll("./sdb/data/"+dbName, 0777); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func createCollectionsDir(dbName string) error {
-	if err := os.MkdirAll("./sdb/data/"+dbName+"/collections", 0777); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func createDbFile(dbName string) (*os.File, error) {
-	file, err := os.Create("./sdb/data/" + dbName + "/database.json")
+	file, err := os.Create("./sdb/data/" + dbName + ".json")
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +127,7 @@ func createDbFile(dbName string) (*os.File, error) {
 }
 
 func readDbFile(dbName string) ([]byte, error) {
-	contentBytes, err := ioutil.ReadFile("./sdb/data/" + dbName + "/database.json")
+	contentBytes, err := ioutil.ReadFile("./sdb/data/" + dbName + ".json")
 	if err != nil {
 		return nil, err
 	}
@@ -189,6 +159,8 @@ func writeDbFile(file *os.File, db Database) error {
 	database.Uuid = uuid.New().String()
 	database.Name = db.Name
 	database.Type = db.Type
+	database.CTime = db.CTime
+	database.MTime = db.MTime
 
 	// Convert database struct back to json
 	databaseJson, err := json.Marshal(database)

@@ -47,7 +47,7 @@ func (c *Collection) Create(dbName string) error {
 
 	// Open database file
 	pwd, _ := os.Getwd()
-	content, err := ioutil.ReadFile(pwd + "/sdb/data/" + dbName + "/database.json")
+	content, err := ioutil.ReadFile(pwd + "/sdb/data/" + dbName + ".json")
 	if err != nil {
 		fmt.Println("Unable to open database file: ", err)
 		return err
@@ -63,34 +63,12 @@ func (c *Collection) Create(dbName string) error {
 	// Add collection to database collections slice
 	db.Collections = append(db.Collections, *c)
 
-	file, err := os.OpenFile(pwd+"/sdb/data/"+dbName+"/database.json", os.O_WRONLY, os.ModeAppend)
+	file, err := os.OpenFile(pwd+"/sdb/data/"+dbName+".json", os.O_WRONLY, os.ModeAppend)
 	err = saveDbFile(file, *db)
 	if err != nil {
 		fmt.Printf("saveDbFile: %v\n", err)
 		return err
 	}
-
-	// Create new collection file in proper database directory
-
-	file, err = createColFile(dbName, c.Name)
-	if err != nil {
-		return err
-	}
-
-	// Convert Collection struct to JSON
-	colJson, err := json.Marshal(c)
-	if err != nil {
-		return err
-	}
-
-	// Convert json to bytes
-	colBytes := []byte(colJson)
-
-	// Write bytes to collection file
-	err = writeColFile(file, colBytes)
-
-	// Save file to disk
-	file.Sync()
 
 	return nil
 }
@@ -122,26 +100,6 @@ func (c *Collection) Delete() error {
 	return nil
 }
 
-func readColFile(dbName string, colName string) ([]byte, error) {
-	contentBytes, err := ioutil.ReadFile("./sdb/data/" + dbName + "/collections/" + colName + ".json")
-	if err != nil {
-		return nil, err
-	}
-
-	return contentBytes, nil
-}
-
-func decodeColFile(data []byte) (*Collection, error) {
-	var collection Collection
-
-	err := json.Unmarshal(data, &collection)
-	if err != nil {
-		return nil, err
-	}
-
-	return &collection, nil
-}
-
 func saveDbFile(file *os.File, db Database) error {
 	// Convert database struct back to json
 	databaseJson, err := json.Marshal(db)
@@ -159,24 +117,6 @@ func saveDbFile(file *os.File, db Database) error {
 	}
 
 	file.Sync()
-
-	return nil
-}
-
-func createColFile(dbName string, colName string) (*os.File, error) {
-	file, err := os.Create("./sdb/data/" + dbName + "/collections" + "/" + colName + ".json")
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
-}
-
-func writeColFile(file *os.File, data []byte) error {
-	_, err := file.Write(data)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }

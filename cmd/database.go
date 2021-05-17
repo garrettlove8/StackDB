@@ -11,6 +11,7 @@ import (
 func init() {
 	rootCmd.AddCommand(databaseCmd)
 	databaseCmd.AddCommand(createDatabaseCmd)
+	databaseCmd.AddCommand(useDatabaseCmd)
 }
 
 var databaseCmd = &cobra.Command{
@@ -62,6 +63,34 @@ var createDatabaseCmd = &cobra.Command{
 		// TODO:  At this point, the database is technically created. However, we
 		// still need to add it to the system database's database collection so
 		// we can keep track of it
+
+		return nil
+	},
+}
+
+var useDatabaseCmd = &cobra.Command{
+	Use:   "use",
+	Short: "The use command allows you to load a given database so you can use it.",
+	Long:  "The use command allows you to load a given database so you can use it. Only one database can be in use at a time.",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("ARGS: ", args)
+
+		if len(args) < 1 {
+			return fmt.Errorf("Not enough arguments")
+		}
+
+		wantedDb := database.Database{
+			Name: args[0],
+		}
+
+		db, err := wantedDb.Load()
+		if err != nil {
+			return fmt.Errorf("Unable to use database %v", args[0])
+		}
+
+		activeDatabase = db
+
+		fmt.Printf("Database ready for use: %v", activeDatabase)
 
 		return nil
 	},

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"StackDB/internal/database"
+	"StackDB/internal/setup"
 	"fmt"
 	"time"
 
@@ -46,6 +47,10 @@ var createDatabaseCmd = &cobra.Command{
 			return fmt.Errorf("Unsupported database type")
 		}
 
+		if isSetup := setup.CheckSetup(); !isSetup {
+			return fmt.Errorf("please run setup process before creating a new database")
+		}
+
 		newDatabase := database.Database{
 			Name:  args[0],
 			Type:  args[1],
@@ -56,6 +61,20 @@ var createDatabaseCmd = &cobra.Command{
 		_, err := newDatabase.Create()
 		if err != nil {
 			return fmt.Errorf("Unable to create database: %v", err)
+		}
+
+		body := make(map[string][]byte)
+		body["name"] = []byte(newDatabase.Name)
+
+		newData := database.Data{
+			CTime: newDatabase.CTime,
+			MTime: newDatabase.MTime,
+			Body:  body,
+		}
+
+		_, err = systemDatabase.Insert("databases", &newData)
+		if err != nil {
+			fmt.Println("cmd Database Insert error: ", err)
 		}
 
 		fmt.Printf("Database create.\n\tName: %v\n\tType: %v\n", args[0], args[1])

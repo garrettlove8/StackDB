@@ -22,12 +22,26 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func Execute(active, system *database.Database) {
-	activeDatabase = active
-	systemDatabase = system
+func Execute(active, system *database.Database) error {
+	if isSetup := setup.CheckSetup(); isSetup {
+		wantedDb := database.Database{
+			Name: "stackdb",
+		}
+
+		db, err := wantedDb.Load()
+		if err != nil {
+			return fmt.Errorf("Unable to load system database")
+		}
+
+		activeDatabase = active
+		systemDatabase = db
+		system = db
+	}
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	return nil
 }

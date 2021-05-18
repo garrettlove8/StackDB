@@ -2,6 +2,7 @@ package database
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -60,6 +61,32 @@ func (db *Database) Create() (*Database, error) {
 
 // Insert inserts data into a database it is called on.
 func (db *Database) Insert(colName string, data *Data) (*Data, error) {
+	data.Uuid = uuid.New().String()
+
+	fmt.Println("Database Insert: ", data)
+
+	for _, v := range db.Collections {
+		if v.Name == colName {
+			v.Data[data.Uuid] = *data
+		}
+	}
+
+	file, err := os.OpenFile("./sdb/data/"+db.Name+".json", os.O_WRONLY, os.ModeExclusive)
+
+	databaseJson, err := json.Marshal(db)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert database json back to a byte array so it can be written to the database file
+	databaseBytes := []byte(databaseJson)
+
+	// Write database byte array to database file
+	_, err = file.WriteAt(databaseBytes, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	return data, nil
 }
 
@@ -161,6 +188,7 @@ func writeDbFile(file *os.File, db Database) error {
 	database.Type = db.Type
 	database.CTime = db.CTime
 	database.MTime = db.MTime
+	// database.Collections = make([]Collection, 0)
 
 	// Convert database struct back to json
 	databaseJson, err := json.Marshal(database)

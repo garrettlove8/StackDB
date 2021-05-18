@@ -12,6 +12,7 @@ var setupCmd = &cobra.Command{
 	Use:   "setup",
 	Short: "A stackable database for cloud native applications",
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("setting up")
 		err := setup.Setup()
 		if err != nil {
 			fmt.Println(err)

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"StackDB/internal/database"
+	"StackDB/internal/setup"
 	"fmt"
 	"time"
 
@@ -46,23 +47,42 @@ var createDatabaseCmd = &cobra.Command{
 			return fmt.Errorf("Unsupported database type")
 		}
 
-		newDatabase := database.Database{
-			Name:  args[0],
-			Type:  args[1],
-			CTime: time.Now().String(),
-			MTime: time.Now().String(),
+		if isSetup := setup.CheckSetup(); !isSetup {
+			return fmt.Errorf("please run setup process before creating a new database")
 		}
+
+		newDatabase := database.NewDatabase()
+
+		newDatabase.Name = args[0]
+		newDatabase.Type = args[1]
+		newDatabase.CTime = time.Now().String()
+		newDatabase.MTime = time.Now().String()
 
 		_, err := newDatabase.Create()
 		if err != nil {
 			return fmt.Errorf("Unable to create database: %v", err)
 		}
 
-		fmt.Printf("Database create.\n\tName: %v\n\tType: %v\n", args[0], args[1])
+		body := make(map[string][]byte)
+		body["name"] = []byte(newDatabase.Name)
 
-		// TODO:  At this point, the database is technically created. However, we
-		// still need to add it to the system database's database collection so
-		// we can keep track of it
+		newData := database.NewData()
+		newData.CTime = time.Now().String()
+		newData.MTime = time.Now().String()
+		newData.Body = body
+
+		_, err = systemDatabase.Insert("databases", newData)
+		if err != nil {
+			// TODO: Idealy if there is an error here the process should be undone automatically.
+
+			return fmt.Errorf(`
+			database has been created,
+			however there was an error adding the new database to the tracking system: %v.
+			It is recommended to delete the new database and fix the tracking issue before recreating it.`,
+				err)
+		}
+
+		fmt.Printf("Database created:\n\tName: %v\n\tType: %v\n", args[0], args[1])
 
 		return nil
 	},

@@ -44,6 +44,15 @@ type DatabaseMeta struct {
 	MTime string `json:"mTime"`
 }
 
+// NewDatabase is a factory to function that handles the creation on a new database instance.
+func NewDatabase() *Database {
+	database := Database{
+		Uuid: uuid.New().String(),
+	}
+
+	return &database
+}
+
 // Create creates a new database using the data from the database type instance it is called on.
 func (db *Database) Create() (*Database, error) {
 	file, err := createDbFile(db.Name)
@@ -60,6 +69,38 @@ func (db *Database) Create() (*Database, error) {
 
 // Insert inserts data into a database it is called on.
 func (db *Database) Insert(colName string, data *Data) (*Data, error) {
+	// Find the correct collection to add the data to, then add it.
+	for _, v := range db.Collections {
+		if v.Name == colName {
+			v.Data[data.Uuid] = *data
+		}
+	}
+
+	// TODO: Also, at this point the data is techinally already in the database because of the
+	//		previous block of code. There does it therefore make sense to move this part having
+	// 		to do with persisting the changes to the file system out of the insert method?
+	//		Perhaps to the storage engine, which is supposed to be dealing with this type of
+	//		stuff anyway?
+
+	// Convert db struct to JSON
+	databaseJson, err := json.Marshal(db)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert database json to a byte array so it can be written to the database file
+	databaseBytes := []byte(databaseJson)
+
+	// Open the database file so we can write the new data to it.
+	// TODO: Not sure if these are the correct perms and mode to be using here but it does work.
+	file, err := os.OpenFile("./sdb/data/"+db.Name+".json", os.O_WRONLY, os.ModeExclusive)
+
+	// Write database byte array to database file
+	_, err = file.WriteAt(databaseBytes, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	return data, nil
 }
 
@@ -161,6 +202,7 @@ func writeDbFile(file *os.File, db Database) error {
 	database.Type = db.Type
 	database.CTime = db.CTime
 	database.MTime = db.MTime
+	// database.Collections = make([]Collection, 0)
 
 	// Convert database struct back to json
 	databaseJson, err := json.Marshal(database)

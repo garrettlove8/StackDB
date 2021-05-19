@@ -33,6 +33,7 @@ func Setup() error {
 		Name:  "databases",
 		CTime: time.Now().String(),
 		MTime: time.Now().String(),
+		Data:  make(map[string]database.Data),
 	}
 
 	err := setupDirStructure()

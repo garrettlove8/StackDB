@@ -26,7 +26,7 @@ type Collection struct {
 	MTime string `json:"mTime"`
 
 	// Data is the data held within a collection.
-	Data map[string][]Data `json:"data"`
+	Data map[string]Data `json:"data"`
 }
 
 // CollectionMeta is the meta data representation of a collection.

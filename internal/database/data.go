@@ -1,6 +1,10 @@
 package database
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // Data is the type used for storing data within collections.
 // You can think of Data as being akin to a row in a relational database.
@@ -19,6 +23,15 @@ type Data struct {
 
 	// Body is the actual data you are storing in a collection.
 	Body map[string][]byte `json:"body"`
+}
+
+// NewData is a factory to function that handles the creation on a new data instance.
+func NewData() *Data {
+	data := Data{
+		Uuid: uuid.New().String(),
+	}
+
+	return &data
 }
 
 // Edit allows you to edit a specific piece of data.

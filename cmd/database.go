@@ -51,12 +51,12 @@ var createDatabaseCmd = &cobra.Command{
 			return fmt.Errorf("please run setup process before creating a new database")
 		}
 
-		newDatabase := database.Database{
-			Name:  args[0],
-			Type:  args[1],
-			CTime: time.Now().String(),
-			MTime: time.Now().String(),
-		}
+		newDatabase := database.NewDatabase()
+
+		newDatabase.Name = args[0]
+		newDatabase.Type = args[1]
+		newDatabase.CTime = time.Now().String()
+		newDatabase.MTime = time.Now().String()
 
 		_, err := newDatabase.Create()
 		if err != nil {
@@ -66,13 +66,12 @@ var createDatabaseCmd = &cobra.Command{
 		body := make(map[string][]byte)
 		body["name"] = []byte(newDatabase.Name)
 
-		newData := database.Data{
-			CTime: newDatabase.CTime,
-			MTime: newDatabase.MTime,
-			Body:  body,
-		}
+		newData := database.NewData()
+		newData.CTime = time.Now().String()
+		newData.MTime = time.Now().String()
+		newData.Body = body
 
-		_, err = systemDatabase.Insert("databases", &newData)
+		_, err = systemDatabase.Insert("databases", newData)
 		if err != nil {
 			// TODO: Idealy if there is an error here the process should be undone automatically.
 
@@ -83,7 +82,7 @@ var createDatabaseCmd = &cobra.Command{
 				err)
 		}
 
-		fmt.Printf("Database create.\n\tName: %v\n\tType: %v\n", args[0], args[1])
+		fmt.Printf("Database created:\n\tName: %v\n\tType: %v\n", args[0], args[1])
 
 		return nil
 	},

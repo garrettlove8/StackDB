@@ -74,14 +74,16 @@ var createDatabaseCmd = &cobra.Command{
 
 		_, err = systemDatabase.Insert("databases", &newData)
 		if err != nil {
-			fmt.Println("cmd Database Insert error: ", err)
+			// TODO: Idealy if there is an error here the process should be undone automatically.
+
+			return fmt.Errorf(`
+			database has been created,
+			however there was an error adding the new database to the tracking system: %v.
+			It is recommended to delete the new database and fix the tracking issue before recreating it.`,
+				err)
 		}
 
 		fmt.Printf("Database create.\n\tName: %v\n\tType: %v\n", args[0], args[1])
-
-		// TODO:  At this point, the database is technically created. However, we
-		// still need to add it to the system database's database collection so
-		// we can keep track of it
 
 		return nil
 	},

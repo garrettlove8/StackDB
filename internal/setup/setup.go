@@ -56,7 +56,11 @@ func Setup() error {
 		return err
 	}
 
-	col.Create(newDb.Name)
+	col.Create(newDb)
+
+	fmt.Println("setup:newDb: ", newDb)
+
+	newDb.Persist()
 
 	return nil
 }

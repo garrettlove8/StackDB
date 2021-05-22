@@ -1,9 +1,9 @@
 package database
 
 import (
+	"StackDB/internal/utils"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -42,33 +42,23 @@ type CollectionMeta struct {
 // Create facilitates the creation of a new collection in a database.
 // It's job is to create the necessary directories for the new collection,
 // after which it handles updating the its database to account for itself.
-func (c *Collection) Create(dbName string) error {
+func NewCollection() *Collection {
+	newCol := Collection{
+		Uuid: utils.GetUuid(),
+	}
+
+	return &newCol
+}
+
+// Create facilitates the creation of a new collection in a database.
+// It's job is to create the necessary directories for the new collection,
+// after which it handles updating the its database to account for itself.
+func (c *Collection) Create(db *Database) error {
 	fmt.Println("collection:Create:c: ", c)
-
-	// Open database file
-	pwd, _ := os.Getwd()
-	content, err := ioutil.ReadFile(pwd + "/sdb/data/" + dbName + ".json")
-	if err != nil {
-		fmt.Println("Unable to open database file: ", err)
-		return err
-	}
-	contentBytes := []byte(content)
-
-	// Unmarshal database file to Database struct
-	db, err := decodeDbFile(contentBytes)
-	if err != nil {
-		return err
-	}
+	fmt.Println("collection:Create:db:Collections: ", db.Collections)
 
 	// Add collection to database collections slice
 	db.Collections = append(db.Collections, *c)
-
-	file, err := os.OpenFile(pwd+"/sdb/data/"+dbName+".json", os.O_WRONLY, os.ModeAppend)
-	err = saveDbFile(file, *db)
-	if err != nil {
-		fmt.Printf("saveDbFile: %v\n", err)
-		return err
-	}
 
 	return nil
 }

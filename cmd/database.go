@@ -11,8 +11,8 @@ import (
 
 func init() {
 	rootCmd.AddCommand(databaseCmd)
-	databaseCmd.AddCommand(createDatabaseCmd)
 	databaseCmd.AddCommand(useDatabaseCmd)
+	databaseCmd.AddCommand(createDatabaseCmd)
 }
 
 var databaseCmd = &cobra.Command{
@@ -20,6 +20,8 @@ var databaseCmd = &cobra.Command{
 	Short: "The database command allows you to interact with any of the databases currently in the system.",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("This is the database command")
+		fmt.Println("Create collection : database : active : ", activeDatabase)
+		fmt.Println("Create collection : database : system : ", systemDatabase)
 	},
 }
 
@@ -33,7 +35,9 @@ var createDatabaseCmd = &cobra.Command{
 		Options: keyValue
 	`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// TODO: Figure out debugging strategy so this can be implemented properly
 		fmt.Println("ARGS: ", args)
+		fmt.Println("database:create:systemDB: ", systemDatabase)
 
 		if len(args) < 2 {
 			return fmt.Errorf("Not enough arguments")
@@ -82,6 +86,17 @@ var createDatabaseCmd = &cobra.Command{
 				err)
 		}
 
+		err = systemDatabase.Persist()
+		if err != nil {
+			// TODO: Idealy if there is an error here the process should be undone automatically.
+
+			return fmt.Errorf(`
+			database has been created,
+			however there was an error persisting the new database to the tracking system: %v.
+			It is recommended to delete the new database and fix the tracking issue before recreating it.`,
+				err)
+		}
+
 		fmt.Printf("Database created:\n\tName: %v\n\tType: %v\n", args[0], args[1])
 
 		return nil
@@ -103,12 +118,10 @@ var useDatabaseCmd = &cobra.Command{
 			Name: args[0],
 		}
 
-		db, err := wantedDb.Load()
-		if err != nil {
-			return fmt.Errorf("Unable to use database %v", args[0])
-		}
-
-		activeDatabase = db
+		activeDatabase, _ = wantedDb.Load()
+		// if err != nil {
+		// 	return fmt.Errorf("Unable to use database %v", args[0])
+		// }
 
 		fmt.Printf("Database ready for use: %v", activeDatabase)
 

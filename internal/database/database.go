@@ -2,6 +2,7 @@ package database
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -70,22 +71,25 @@ func (db *Database) Create() (*Database, error) {
 // Insert inserts data into a database it is called on.
 func (db *Database) Insert(colName string, data *Data) (*Data, error) {
 	// Find the correct collection to add the data to, then add it.
+	fmt.Println("Insert:db: ", db)
+
 	for _, v := range db.Collections {
 		if v.Name == colName {
 			v.Data[data.Uuid] = *data
 		}
 	}
 
-	// TODO: Also, at this point the data is techinally already in the database because of the
-	//		previous block of code. There does it therefore make sense to move this part having
-	// 		to do with persisting the changes to the file system out of the insert method?
-	//		Perhaps to the storage engine, which is supposed to be dealing with this type of
-	//		stuff anyway?
+	fmt.Println("Insert:db: ", db)
 
+	return data, nil
+}
+
+// Persist saves the database it is called on to disk.
+func (db *Database) Persist() error {
 	// Convert db struct to JSON
 	databaseJson, err := json.Marshal(db)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Convert database json to a byte array so it can be written to the database file
@@ -94,14 +98,17 @@ func (db *Database) Insert(colName string, data *Data) (*Data, error) {
 	// Open the database file so we can write the new data to it.
 	// TODO: Not sure if these are the correct perms and mode to be using here but it does work.
 	file, err := os.OpenFile("./sdb/data/"+db.Name+".json", os.O_WRONLY, os.ModeExclusive)
+	if err != nil {
+		return err
+	}
 
 	// Write database byte array to database file
 	_, err = file.WriteAt(databaseBytes, 0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return data, nil
+	return nil
 }
 
 // Read provides access to a database's meta data.
@@ -137,17 +144,21 @@ func (db *Database) Delete() error {
 // a database for use by an application, the shell, or CLI, as well as when
 // StackDB is first started up to load the system database.
 func (db *Database) Load() (*Database, error) {
+	fmt.Println("database:load:name: ", db.Name)
+
 	data, err := readDbFile(db.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	db, err = decodeDbFile(data)
+	wantedDb, err := decodeDbFile(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return db, nil
+	fmt.Println("database:load:db: ", wantedDb)
+
+	return wantedDb, nil
 }
 
 func (db *Database) Search(data *Data) (*[]Data, error) {

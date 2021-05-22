@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"StackDB/internal/database"
 	"StackDB/internal/setup"
 	"fmt"
 
@@ -12,16 +11,12 @@ var setupCmd = &cobra.Command{
 	Use:   "setup",
 	Short: "A stackable database for cloud native applications",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("setting up")
 		err := setup.Setup()
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		system := database.Database{
-			Name: "system",
-		}
-		systemDatabase, _ = system.Load()
+		fmt.Println("Setup process complete. You can now use StackDB")
 	},
 }
 

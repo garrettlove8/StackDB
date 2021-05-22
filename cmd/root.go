@@ -3,6 +3,7 @@ package cmd
 import (
 	"StackDB/internal/database"
 	"StackDB/internal/setup"
+	"errors"
 	"fmt"
 	"os"
 
@@ -15,33 +16,23 @@ var activeDatabase *database.Database
 var rootCmd = &cobra.Command{
 	Use:   "sdb",
 	Short: "A stackable database for cloud native applications",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if isSetup := setup.CheckSetup(); !isSetup {
-			fmt.Println("StackDB has not been setup yet")
+			return errors.New("StackDB has not been setup yet")
 		}
+
+		// TODO: Add onto this message
+		fmt.Println("Welcome to StackDB!")
+
+		return nil
 	},
 }
 
-func Execute(active, system *database.Database) error {
-	if isSetup := setup.CheckSetup(); isSetup {
-		wantedDb := database.Database{
-			Name: "stackdb",
-		}
-
-		db, err := wantedDb.Load()
-		if err != nil {
-			return fmt.Errorf("Unable to load system database")
-		}
-
-		activeDatabase = active
-		systemDatabase = db
-		system = db
-	}
-
+func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	return nil
+	fmt.Println("Execute:systemDatabase: ", systemDatabase)
 }

@@ -9,5 +9,5 @@ clean:
 	rm -rf ./sdb
 	go clean
 
-build:
+build: clean
 	go build

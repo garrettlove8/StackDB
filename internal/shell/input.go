@@ -14,21 +14,23 @@ var Open bool = true
 var systemDatabase *database.Database
 var activeDatabase *database.Database
 
+// Start load the stackdb database into memory allowing the user
+// to begin using StackDB. After that, it starts the StackDB shell.
 func Start() error {
-	wantedDb := database.Database{
-		Name: "stackdb",
+	err := loadSystemDb()
+	if err != nil {
+		return err
 	}
 
-	var err error
-	if systemDatabase, err = wantedDb.Load(); err != nil {
-		errMsg := fmt.Sprintf("unable to load database %s", wantedDb.Name)
-		return errors.New(errMsg)
+	err = read()
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func Read() error {
+func read() error {
 	for Open {
 		reader := bufio.NewReader((os.Stdin))
 		text, err := reader.ReadString('\n')
@@ -39,6 +41,20 @@ func Read() error {
 		text = strings.TrimSuffix(text, "\n")
 		process(text)
 		fmt.Println()
+	}
+
+	return nil
+}
+
+func loadSystemDb() error {
+	wantedDb := database.Database{
+		Name: "stackdb",
+	}
+
+	var err error
+	if systemDatabase, err = wantedDb.Load(); err != nil {
+		errMsg := fmt.Sprintf("unable to load database %s", wantedDb.Name)
+		return errors.New(errMsg)
 	}
 
 	return nil
@@ -87,8 +103,6 @@ func handleUse(words []string) error {
 	if words[0] != "use" {
 		return nil
 	}
-
-	fmt.Println("user would like to use a database")
 
 	wantedDb := database.Database{
 		Name: words[1],

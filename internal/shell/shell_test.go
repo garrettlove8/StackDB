@@ -6,7 +6,6 @@ import (
 	"StackDB/internal/utils"
 	"errors"
 	"os"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -34,22 +33,23 @@ var _ = Describe("Shell", func() {
 			})
 		})
 	})
-	Describe("Reading shell input", func() {
-		Context("When reading successfully", func() {
-			It("should return nil", func() {
-				setup.Setup()
-				shell.Start()
-				readRes := shell.Read()
-				time.Sleep(2 * time.Second)
-				shell.Open = false
-				Expect(readRes).To(BeNil())
-			})
-		})
-		// Context("When reading unsuccessfully", func() {
-		// 	It("should inform the caller by returning an error", func() {
-		// 		err := errors.New("unable to load database stackdb")
-		// 		Expect(shell.Start()).To(Equal(err))
-		// 	})
-		// })
-	})
+	// TODO: figure out the tests for reading stdin from the shell
+	// Describe("Reading shell input", func() {
+	// Context("When reading successfully", func() {
+	// 	It("should return nil", func() {
+	// 		setup.Setup()
+	// 		shell.Start()
+	// 		readRes := shell.Read()
+	// 		time.Sleep(2 * time.Second)
+	// 		shell.Open = false
+	// 		Expect(readRes).To(BeNil())
+	// 	})
+	// })
+	// Context("When reading unsuccessfully", func() {
+	// 	It("should inform the caller by returning an error", func() {
+	// 		err := errors.New("unable to load database stackdb")
+	// 		Expect(shell.Start()).To(Equal(err))
+	// 	})
+	// })
+	// })
 })

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -48,7 +49,9 @@ type DatabaseMeta struct {
 // NewDatabase is a factory to function that handles the creation on a new database instance.
 func NewDatabase() *Database {
 	database := Database{
-		Uuid: uuid.New().String(),
+		Uuid:  uuid.New().String(),
+		CTime: time.Now().String(),
+		MTime: time.Now().String(),
 	}
 
 	return &database

@@ -3,22 +3,20 @@ package shell_test
 import (
 	"StackDB/internal/setup"
 	"StackDB/internal/shell"
-	"StackDB/internal/utils"
 	"errors"
-	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Shell", func() {
-	BeforeSuite(func() {
-		os.Chdir("../../")
-		utils.GetEnv()
-	})
-	AfterEach(func() {
-		os.RemoveAll("./sdb")
-	})
+	// BeforeSuite(func() {
+	// 	os.Chdir("../../")
+	// 	utils.GetEnv()
+	// })
+	// AfterEach(func() {
+	// 	os.RemoveAll("./sdb")
+	// })
 	Describe("Starting the shell", func() {
 		Context("When starting successfully", func() {
 			XIt("should return nil", func() {

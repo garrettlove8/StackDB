@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"StackDB/internal/database"
+	"StackDB/internal/collection"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -21,19 +21,12 @@ func Setup() error {
 		return nil
 	}
 
-	db := database.Database{
-		Uuid:  uuid.New().String(),
-		Name:  "stackdb",
-		Type:  "keyValue",
-		CTime: time.Now().String(),
-		MTime: time.Now().String(),
-	}
-	col := database.Collection{
+	databaseCol := collection.Collection{
 		Uuid:  uuid.New().String(),
 		Name:  "databases",
 		CTime: time.Now().String(),
-		MTime: time.Now().String(),
-		Data:  make(map[string]database.Data),
+		UTime: time.Now().String(),
+		Data:  make(map[string]collection.Data),
 	}
 
 	err := setupDirStructure()
@@ -51,12 +44,10 @@ func Setup() error {
 		return err
 	}
 
-	newDb, err := db.Create()
+	newDb, err := databaseCol.Create()
 	if err != nil {
 		return err
 	}
-
-	col.Create(newDb)
 
 	fmt.Println("setup:newDb: ", newDb)
 

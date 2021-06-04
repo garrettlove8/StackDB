@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"StackDB/internal/database"
+	"StackDB/internal/collection"
 	"StackDB/internal/setup"
 	"errors"
 	"fmt"
@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var systemDatabase *database.Database
-var activeDatabase *database.Database
+var systemCollection *collection.Collection
+var activeCollection *collection.Collection
 
 var rootCmd = &cobra.Command{
 	Use:   "sdb",
@@ -34,5 +34,5 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Execute:systemDatabase: ", systemDatabase)
+	fmt.Println("Execute:systemDatabase: ", systemCollection)
 }

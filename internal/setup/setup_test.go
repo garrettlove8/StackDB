@@ -19,7 +19,7 @@ var _ = Describe("Setup", func() {
 	})
 	Describe("Setup StackDB", func() {
 		Context("When completed successfully", func() {
-			It("should return nil", func() {
+			XIt("should return nil", func() {
 				Expect(setup.Setup()).To(BeNil())
 			})
 		})

@@ -1,7 +1,7 @@
 package shell
 
 import (
-	"StackDB/internal/database"
+	"StackDB/internal/collection"
 	"bufio"
 	"errors"
 	"fmt"
@@ -11,8 +11,8 @@ import (
 )
 
 var Open bool = true
-var systemDatabase *database.Database
-var activeDatabase *database.Database
+var systemCollection *collection.Collection
+var activeCollection *collection.Collection
 
 // Start load the stackdb database into memory allowing the user
 // to begin using StackDB. After that, it starts the StackDB shell.
@@ -47,12 +47,12 @@ func read() error {
 }
 
 func loadSystemDb() error {
-	wantedDb := database.Database{
+	wantedDb := collection.Collection{
 		Name: "stackdb",
 	}
 
 	var err error
-	if systemDatabase, err = wantedDb.Load(); err != nil {
+	if systemCollection, err = wantedDb.Load(); err != nil {
 		errMsg := fmt.Sprintf("unable to load database %s", wantedDb.Name)
 		return errors.New(errMsg)
 	}
@@ -104,27 +104,26 @@ func handleUse(words []string) error {
 		return nil
 	}
 
-	wantedDb := database.Database{
+	wantedDb := collection.Collection{
 		Name: words[1],
 	}
 
 	var err error
-	activeDatabase, err = wantedDb.Load()
+	activeCollection, err = wantedDb.Load()
 	if err != nil {
-		newDatabase := database.NewDatabase()
+		newDatabase := collection.NewCollection()
 		newDatabase.Name = words[1]
-		newDatabase.Type = words[2]
-		activeDatabase, _ = newDatabase.Create()
+		activeCollection, _ = newDatabase.Create()
 
 		body := make(map[string][]byte)
 		body["name"] = []byte(newDatabase.Name)
 
-		newData := database.NewData()
+		newData := collection.NewData()
 		newData.CTime = time.Now().String()
-		newData.MTime = time.Now().String()
+		newData.UTime = time.Now().String()
 		newData.Body = body
 
-		_, err = systemDatabase.Insert("databases", newData)
+		_, err = systemCollection.Insert(newData)
 		if err != nil {
 			// TODO: Idealy if there is an error here the process should be undone automatically.
 
@@ -135,7 +134,7 @@ func handleUse(words []string) error {
 				err)
 		}
 
-		err = systemDatabase.Persist()
+		err = systemCollection.Persist()
 		if err != nil {
 			// TODO: Idealy if there is an error here the process should be undone automatically.
 

@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"StackDB/internal/database"
+	"StackDB/internal/collection"
 	"fmt"
 
 	"github.com/spf13/cobra"
 )
 
 func init() {
-	databaseCmd.AddCommand(collectionCmd)
+	rootCmd.AddCommand(collectionCmd)
 	collectionCmd.AddCommand(createCollectionCmd)
 }
 
@@ -17,8 +17,8 @@ var collectionCmd = &cobra.Command{
 	Short: "The collection command allows you to interact with any of the collections in the active database.",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("This is the collection command")
-		fmt.Println("Create collection : database : active : ", activeDatabase)
-		fmt.Println("Create collection : database : system : ", systemDatabase)
+		fmt.Println("Create collection : database : active : ", activeCollection)
+		fmt.Println("Create collection : database : system : ", systemCollection)
 	},
 }
 
@@ -36,17 +36,17 @@ var createCollectionCmd = &cobra.Command{
 			return fmt.Errorf("Not enough arguments")
 		}
 
-		newCollection := database.NewCollection()
+		newCollection := collection.NewCollection()
 		newCollection.Name = args[0]
 
-		err := newCollection.Create(activeDatabase)
+		_, err := newCollection.Create()
 		if err != nil {
 			return fmt.Errorf("Unable to create database: %v", err)
 		}
 
-		err = activeDatabase.Persist()
+		err = activeCollection.Persist()
 		if err != nil {
-			return fmt.Errorf("unable to persist database: %v\n Error: %v", activeDatabase.Name, err)
+			return fmt.Errorf("unable to persist database: %v\n Error: %v", activeCollection.Name, err)
 		}
 
 		fmt.Printf("Database created:\n\tName: %v\n", args[0])

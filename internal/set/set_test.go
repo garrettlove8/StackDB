@@ -1,13 +1,13 @@
-package collection_test
+package set_test
 
 import (
-	"StackDB/internal/collection"
+	"StackDB/internal/set"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Collections", func() {
+var _ = Describe("Sets", func() {
 	// BeforeEach(func() {
 	// 	os.Chdir("../../")
 	// 	utils.GetEnv()
@@ -15,10 +15,10 @@ var _ = Describe("Collections", func() {
 	// AfterEach(func() {
 	// 	os.RemoveAll("./sdb")
 	// })
-	Describe("Create New Collection", func() {
+	Describe("Create New Set", func() {
 		Context("When created successfully", func() {
 			It("should have non-nil values for the appropriate properties", func() {
-				newCol := collection.NewCollection()
+				newCol := set.NewCollection()
 				Expect(newCol.Uuid).NotTo(BeNil())
 				Expect(newCol.CTime).NotTo(BeNil())
 				Expect(newCol.UTime).NotTo(BeNil())
@@ -28,7 +28,7 @@ var _ = Describe("Collections", func() {
 	Describe("Create New Data", func() {
 		Context("When created successfully", func() {
 			It("should have non-nil values for the appropriate properties", func() {
-				newData := collection.NewData()
+				newData := set.NewData()
 				Expect(newData.Uuid).NotTo(BeNil())
 				Expect(newData.CTime).NotTo(BeNil())
 				Expect(newData.UTime).NotTo(BeNil())

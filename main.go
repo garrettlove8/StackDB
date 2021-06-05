@@ -1,7 +1,7 @@
 package main
 
 import (
-	"StackDB/cmd"
+	"StackDB/internal/set"
 	"StackDB/internal/utils"
 )
 
@@ -11,5 +11,8 @@ import (
 func main() {
 	utils.GetEnv()
 
-	cmd.Execute()
+	newSet := set.NewSet()
+	newSet.Create("first", "heyUUID")
+
+	// cmd.Execute()
 }

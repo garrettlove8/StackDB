@@ -1,4 +1,4 @@
-package collection_test
+package set_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestInstall(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Collection Suite")
+	RunSpecs(t, "Set Suite")
 }

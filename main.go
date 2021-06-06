@@ -3,6 +3,7 @@ package main
 import (
 	"StackDB/internal/set"
 	"StackDB/internal/utils"
+	"fmt"
 )
 
 // var systemDatabase database.Database
@@ -11,8 +12,12 @@ import (
 func main() {
 	utils.GetEnv()
 
-	newSet := set.NewSet()
-	newSet.Create("first", "heyUUID")
+	newSet, err := set.NewSet()
+	if err != nil {
+		fmt.Println("main:err: ", err)
+	}
+
+	fmt.Println("main:success:newSet: ", newSet)
 
 	// cmd.Execute()
 }

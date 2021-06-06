@@ -1,13 +1,9 @@
 package setup
 
 import (
-	"StackDB/internal/collection"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 // Setup handles the entire install process. This inlcudes
@@ -21,13 +17,13 @@ func Setup() error {
 		return nil
 	}
 
-	databaseCol := collection.Collection{
-		Uuid:  uuid.New().String(),
-		Name:  "databases",
-		CTime: time.Now().String(),
-		UTime: time.Now().String(),
-		Data:  make(map[string]collection.Data),
-	}
+	// databaseCol := set.Set{
+	// 	Uuid:  uuid.New().String(),
+	// 	Name:  "databases",
+	// 	CTime: time.Now().String(),
+	// 	UTime: time.Now().String(),
+	// 	Data:  make(map[string]set.Data),
+	// }
 
 	err := setupDirStructure()
 	if err != nil {
@@ -44,14 +40,14 @@ func Setup() error {
 		return err
 	}
 
-	newDb, err := databaseCol.Create()
-	if err != nil {
-		return err
-	}
+	// newDb, err := databaseCol.Create()
+	// if err != nil {
+	// 	return err
+	// }
 
-	fmt.Println("setup:newDb: ", newDb)
+	// fmt.Println("setup:newDb: ", newDb)
 
-	newDb.Persist()
+	// newDb.Persist()
 
 	return nil
 }

@@ -3,7 +3,7 @@ package set
 import (
 	"StackDB/internal/utils"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"os"
 	"time"
 )
@@ -35,40 +35,36 @@ type Set struct {
 	Data map[string]Data `json:"data"`
 }
 
-// Create facilitates the creation of a new Set in a database.
+// NewSet facilitates the creation of a new Set in a database.
 // It's job is to create the necessary directories for the new Set,
 // after which it handles updating the its database to account for itself.
-func NewSet() *Set {
-	return &Set{
+//
+// Accepts positional arguments: uuid, name, location string.
+//
+// Note: To save the returned set to disk use the Persist method.
+func NewSet(args ...string) (*Set, error) {
+	if len(args) == 0 {
+		return nil, errors.New("no name provided for new Set.")
+	}
+
+	newSet := Set{
 		Uuid:     utils.GetUuid(),
 		CTime:    time.Now().String(),
 		UTime:    time.Now().String(),
 		Location: os.Getenv("DEFAULT_DATA_LOCATION"),
 	}
-}
 
-// Create facilitates the creation of a new Set in a database.
-// It's job is to create the necessary directories for the new Set,
-// after which it handles updating the its database to account for itself.
-// Arguments: uuid, name, location string
-func (c *Set) Create(args ...string) (*Set, error) {
-	c.Name = args[0]
+	newSet.Name = args[0]
 
 	if len(args) >= 2 {
-		c.Uuid = args[1]
+		newSet.Uuid = args[1]
 	}
 
 	if len(args) >= 3 {
-		c.Location = args[2]
+		newSet.Location = args[2]
 	}
 
-	fmt.Println("Set:Create:c:name: ", c.Name)
-	fmt.Println("Set:Create:c:uuid: ", c.Uuid)
-	fmt.Println("Set:Create:c:location: ", c.Location)
-
-	// c.Persist()
-
-	return nil, nil
+	return &newSet, nil
 }
 
 // Read provides access to a Set's meta data.

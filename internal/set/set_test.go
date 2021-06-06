@@ -2,6 +2,7 @@ package set_test
 
 import (
 	"StackDB/internal/set"
+	"errors"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -15,23 +16,33 @@ var _ = Describe("Sets", func() {
 	// AfterEach(func() {
 	// 	os.RemoveAll("./sdb")
 	// })
-	Describe("Create New Set", func() {
-		Context("When created successfully", func() {
-			It("should have non-nil values for the appropriate properties", func() {
-				newCol := set.NewCollection()
+	Describe("Successfully create new Set", func() {
+		Context("When using default values", func() {
+			It("should have correct value / non-nil propety values", func() {
+				newCol, _ := set.NewSet("setName")
+
+				Expect(newCol.Name).To(Equal("setName"))
 				Expect(newCol.Uuid).NotTo(BeNil())
 				Expect(newCol.CTime).NotTo(BeNil())
 				Expect(newCol.UTime).NotTo(BeNil())
 			})
 		})
+		Context("When using custom values", func() {
+			It("should have used the custom values", func() {
+				newCol, _ := set.NewSet("setName", "setUuid", "setLocation")
+				Expect(newCol.Name).To(Equal("setName"))
+				Expect(newCol.Uuid).To(Equal("setUuid"))
+				Expect(newCol.Location).To(Equal("setLocation"))
+			})
+		})
 	})
-	Describe("Create New Data", func() {
-		Context("When created successfully", func() {
-			It("should have non-nil values for the appropriate properties", func() {
-				newData := set.NewData()
-				Expect(newData.Uuid).NotTo(BeNil())
-				Expect(newData.CTime).NotTo(BeNil())
-				Expect(newData.UTime).NotTo(BeNil())
+	Describe("Unsuccessfully create new Set", func() {
+		Context("When not supplying a name", func() {
+			It("should return an error indicating that no name was provided", func() {
+				_, err := set.NewSet()
+
+				wantedErr := errors.New("no name provided for new Set.")
+				Expect(err).To(Equal(wantedErr))
 			})
 		})
 	})

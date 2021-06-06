@@ -1,7 +1,7 @@
 package shell
 
 import (
-	"StackDB/internal/collection"
+	"StackDB/internal/set"
 	"bufio"
 	"errors"
 	"fmt"
@@ -11,8 +11,8 @@ import (
 )
 
 var Open bool = true
-var systemCollection *collection.Collection
-var activeCollection *collection.Collection
+var systemCollection *set.Set
+var activeCollection *set.Set
 
 // Start load the stackdb database into memory allowing the user
 // to begin using StackDB. After that, it starts the StackDB shell.
@@ -47,7 +47,7 @@ func read() error {
 }
 
 func loadSystemDb() error {
-	wantedDb := collection.Collection{
+	wantedDb := set.Set{
 		Name: "stackdb",
 	}
 
@@ -104,21 +104,19 @@ func handleUse(words []string) error {
 		return nil
 	}
 
-	wantedDb := collection.Collection{
+	wantedDb := set.Set{
 		Name: words[1],
 	}
 
 	var err error
 	activeCollection, err = wantedDb.Load()
 	if err != nil {
-		newDatabase := collection.NewCollection()
-		newDatabase.Name = words[1]
-		activeCollection, _ = newDatabase.Create()
+		newDatabase, _ := set.NewSet(words[1])
 
 		body := make(map[string][]byte)
 		body["name"] = []byte(newDatabase.Name)
 
-		newData := collection.NewData()
+		newData := set.NewData()
 		newData.CTime = time.Now().String()
 		newData.UTime = time.Now().String()
 		newData.Body = body

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"StackDB/internal/collection"
+	"StackDB/internal/set"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -36,18 +36,18 @@ var createCollectionCmd = &cobra.Command{
 			return fmt.Errorf("Not enough arguments")
 		}
 
-		newCollection := collection.NewCollection()
+		newCollection, _ := set.NewSet(args...)
 		newCollection.Name = args[0]
 
-		_, err := newCollection.Create()
-		if err != nil {
-			return fmt.Errorf("Unable to create database: %v", err)
-		}
+		// _, err := newCollection.Create()
+		// if err != nil {
+		// 	return fmt.Errorf("Unable to create database: %v", err)
+		// }
 
-		err = activeCollection.Persist()
-		if err != nil {
-			return fmt.Errorf("unable to persist database: %v\n Error: %v", activeCollection.Name, err)
-		}
+		// err = activeCollection.Persist()
+		// if err != nil {
+		// 	return fmt.Errorf("unable to persist database: %v\n Error: %v", activeCollection.Name, err)
+		// }
 
 		fmt.Printf("Database created:\n\tName: %v\n", args[0])
 

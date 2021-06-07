@@ -39,7 +39,7 @@ type Set struct {
 // It's job is to create the necessary directories for the new Set,
 // after which it handles updating the its database to account for itself.
 //
-// Accepts positional arguments: uuid, name, location string.
+// Accepts positional arguments: name, uuid, location string.
 //
 // Note: To save the returned set to disk use the Persist method.
 func NewSet(args ...string) (*Set, error) {

@@ -1,16 +1,16 @@
-# StackDB
-A stackable database that provides extreme flexibility, self-management, high performance, low cost, and puts cloud native first
-
 ![License](https://img.shields.io/github/license/garrettlove8/StackDB)
 [![Go Report Card](https://goreportcard.com/badge/github.com/garrettlove8/StackDB)](https://goreportcard.com/report/github.com/garrettlove8/StackDB)
 ![Workflow](https://img.shields.io/github/workflow/status/garrettlove8/StackDB/Test%20and%20Build)
 
+# StackDB
 
-## Install and Setup
+A "stackable" database that prioritizes (in no particular order) ease of use, security, performance, and adaptability.
+
+## Installation
 To install and setup StackDB, you first want to download the desired reslease version from [here](https://github.com/garrettlove8/StackDB/releases). After that's complete, run the following commands:
 
 ```bash
-cd path/to/stackdb
+cd path/to/stackdb/executable
 go install
 ```
 
@@ -24,28 +24,26 @@ sdb setup
 
 Now, you're ready to use StackDB!
 
-## Creating a new database
-To create a new database using the CLI (which is currently the only way of doing so) use the following command:
+## Basic Concepts
+Part of how StackDB realizes its priority of "Adaptability" is by limiting its core to a very simple and fundamental data structures - maps and sets. This essentially means that StackDB is a key/value store that allows you to add layers depending on the problem you are trying to solve.
+
+In other words, StackDB isn't by itself a fully-feldged database management system such as Postgres or MongoDB, but rather provides a highly flexible storage machanism that can be used as a base layer to build out relational databases, document databases, graph database, etc..
+
+The reason for going about it this way is that instead of having to decide between MySQL, Postgres, or MongoDB, DynamoDB, etc. is that now, you'll be able to use one database that can adapt to whatever the problem is that you're trying to solve.
+
+## Usage
+
+### Startup
+StackDB is started by running
 
 ```bash
-sdb database create [args]
+sdb start
 ```
 
-### Args
-Args are both positional and required.
+Upon running this command, you'll have started and loaded up the database system as well as entered the shell. From the shell you can interact with everything StackDB has to offer via the SDBL (StackDB Language). Eventually, you'll also be able to connect to the database via the drivers and use it within your own applications.
 
-Ordering:
-1. Name
-2. Type
+### SDBL
+SDBL is under development, more to come...
 
-An error will be returned if the command args don't abide by a few simple rules.
-
-Rules:
-1. The database name cannot be `system` since that is already in use by StackDB.
-2. The only type of database currently available is `keyValue`, however more are coming (Time TBD)
-
-### Example
-
-```bash
-sdb database create dbName keyValue
-```
+## Contributing
+As this is a learning / passion project, I am not currently looking for contribution.

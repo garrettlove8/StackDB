@@ -10,7 +10,7 @@ import (
 )
 
 var _ = Describe("Setup", func() {
-	BeforeEach(func() {
+	BeforeSuite(func() {
 		os.Chdir("../../")
 		utils.GetEnv()
 	})
@@ -19,8 +19,15 @@ var _ = Describe("Setup", func() {
 	})
 	Describe("Setup StackDB", func() {
 		Context("When completed successfully", func() {
-			XIt("should return nil", func() {
+			It("should return nil", func() {
 				Expect(setup.Setup()).To(BeNil())
+			})
+		})
+	})
+	Describe("Check setup", func() {
+		Context("When setup has not yet been run", func() {
+			It("should return false", func() {
+				Expect(setup.CheckSetup()).To(Equal(false))
 			})
 		})
 	})

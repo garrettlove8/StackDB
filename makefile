@@ -5,8 +5,8 @@ test:
 	go test -v -cover ./...
 
 clean:
-	rm -rf ./stackdb
-	rm -rf ./sdb
+	rm -rf ./StackDB
+	rm -rf ~/sdb
 	go clean
 
 build: clean

@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"StackDB/internal/set"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -17,15 +18,12 @@ func Setup() error {
 		return nil
 	}
 
-	// databaseCol := set.Set{
-	// 	Uuid:  uuid.New().String(),
-	// 	Name:  "databases",
-	// 	CTime: time.Now().String(),
-	// 	UTime: time.Now().String(),
-	// 	Data:  make(map[string]set.Data),
-	// }
+	configBytes, err := getConfigContent()
+	if err != nil {
+		return err
+	}
 
-	err := setupDirStructure()
+	err = setupDirStructure()
 	if err != nil {
 		return err
 	}
@@ -35,19 +33,20 @@ func Setup() error {
 		return err
 	}
 
-	err = writeInitialConfig(file)
+	err = writeInitialConfig(file, configBytes)
 	if err != nil {
 		return err
 	}
 
-	// newDb, err := databaseCol.Create()
-	// if err != nil {
-	// 	return err
-	// }
+	systemSets, err := set.NewSet("sets")
+	if err != nil {
+		return err
+	}
 
-	// fmt.Println("setup:newDb: ", newDb)
-
-	// newDb.Persist()
+	err = systemSets.Persist()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -55,7 +54,7 @@ func Setup() error {
 // CheckSetup checks to see if the StackDB setup process has been
 // previously run.
 func CheckSetup() bool {
-	if _, err := os.Stat("./sdb"); !os.IsNotExist(err) {
+	if _, err := os.Stat("~/sdb"); !os.IsNotExist(err) {
 		return true
 	}
 
@@ -63,7 +62,13 @@ func CheckSetup() bool {
 }
 
 func setupDirStructure() error {
-	err := os.MkdirAll("./sdb/logs/transaction", 0777)
+	homepath, _ := os.UserHomeDir()
+	err := os.Chdir(homepath)
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll("./sdb/logs/transactions", 0777)
 	if err != nil {
 		return err
 	}
@@ -100,14 +105,18 @@ func touchConfigFile() (*os.File, error) {
 	return file, nil
 }
 
-func writeInitialConfig(file *os.File) error {
+func getConfigContent() ([]byte, error) {
 	pwd, _ := os.Getwd()
-	configFile, err := ioutil.ReadFile(pwd + "/configs/" + os.Getenv("VERSION") + "/stackdb.json")
+	configBytes, err := ioutil.ReadFile(pwd + "/configs/" + os.Getenv("VERSION") + "/stackdb.json")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = file.Write(configFile)
+	return configBytes, nil
+}
+
+func writeInitialConfig(file *os.File, configBytes []byte) error {
+	_, err := file.Write(configBytes)
 	if err != nil {
 		return err
 	}

@@ -68,7 +68,7 @@ func setupDirStructure() error {
 		return err
 	}
 
-	err = os.MkdirAll("./sdb/logs/transaction", 0777)
+	err = os.MkdirAll("./sdb/logs/transactions", 0777)
 	if err != nil {
 		return err
 	}

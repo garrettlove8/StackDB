@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	rootCmd.AddCommand(setupCmd)
+}
+
 var setupCmd = &cobra.Command{
 	Use:   "setup",
 	Short: "A stackable database for cloud native applications",
@@ -18,8 +22,4 @@ var setupCmd = &cobra.Command{
 
 		fmt.Println("Setup process complete. You can now use StackDB")
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(setupCmd)
 }

@@ -13,6 +13,9 @@ type Header struct {
 	// id system. By default, it uses a V4 UUID.
 	Id string
 
+	// Version is the version of the set.
+	Version string
+
 	// Name is the name of the set. There is no default
 	// and must be provided. If no name is provided a
 	// "No name provided" error will be thrown.
@@ -29,7 +32,7 @@ type Header struct {
 
 // newHeader is a factory function for creating a set header.
 // It uses the positional arguments for: Name, Key, and Uuid
-func newHeader(name, pk, id string) (*Header, error) {
+func newHeader(name, version, pk, id string) (*Header, error) {
 	if name == "" {
 		// TODO: Eventially, this should also log to the error log
 		return nil, errors.New("No name provided")
@@ -39,8 +42,16 @@ func newHeader(name, pk, id string) (*Header, error) {
 
 	newHeader.Name = name
 
+	if version != "" {
+		newHeader.Version = version
+	} else {
+		// TODO: Hardcoded to 1 for now, should be getting value from
+		// config file in the future.
+		newHeader.Version = "1"
+	}
+
 	// Allows for setting a custom PrimaryKey when the set is being
-	// created and stored. If no custom key is provided the record
+	// created and stored. If pk is not provided the record
 	// Id will be used.
 	if pk != "" {
 		// TODO: Since this is dependant on a specific property being present

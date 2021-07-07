@@ -11,15 +11,20 @@ type Header struct {
 	// Id is the globally unique identifier for a set.
 	// It can be configured if you wish to use your own
 	// id system. By default, it uses a V4 UUID.
-	Id string
+	Id string `json:"id"`
 
 	// Version is the version of the set.
-	Version string
+	Version string `json:"version"`
+
+	// Location is the directory path to where the set is stored on disk.
+	// By default, this is managed internally by StackDB, however, if you
+	// are building on top of StackDB this may be helpful to override.
+	Location string `json:"location"`
 
 	// Name is the name of the set. There is no default
 	// and must be provided. If no name is provided a
 	// "No name provided" error will be thrown.
-	Name string
+	Name string `json:"name"`
 
 	// PrimaryKey is the value that will be used as
 	// the key in the data map. By default, the record
@@ -27,7 +32,7 @@ type Header struct {
 	// you'll be primarily searching on a different
 	// property. At the foundational level this is
 	// how an index would be implemented.
-	PrimaryKey string
+	PrimaryKey string `json:"primaryKey"`
 }
 
 // newHeader is a factory function for creating a set header.

@@ -1,8 +1,6 @@
 package set
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
 )
 
@@ -37,12 +35,7 @@ type Header struct {
 
 // newHeader is a factory function for creating a set header.
 // It uses the positional arguments for: Name, Key, and Uuid
-func newHeader(name, version, pk, id string) (*Header, error) {
-	if name == "" {
-		// TODO: Eventially, this should also log to the error log
-		return nil, errors.New("No name provided")
-	}
-
+func newHeader(name, version, pk, id string) *Header {
 	newHeader := &Header{}
 
 	newHeader.Name = name
@@ -63,16 +56,16 @@ func newHeader(name, version, pk, id string) (*Header, error) {
 		// in a data record we'll need to ensure that this property is present
 		// when new data records are being added
 		newHeader.PrimaryKey = pk
-	} else {
+	} else if pk == "defualt" {
 		newHeader.PrimaryKey = "id"
 	}
 
 	if id != "" {
 		newHeader.Id = id
-	} else {
+	} else if id == "defualt" {
 		newUuid, _ := uuid.NewRandom()
 		newHeader.Id = newUuid.String()
 	}
 
-	return newHeader, nil
+	return newHeader
 }

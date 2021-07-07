@@ -1,35 +1,16 @@
 package set
 
 import (
-	"StackDB/internal/utils"
 	"encoding/json"
 	"errors"
 	"os"
-	"time"
 )
 
 // Sets are the same as those in many NoSQL database and are akin to tables in relational databases.
 // They privde an easy and logical way to separate data with a database
 type Set struct {
-	// Uuid (Universal Unique Identifier) is the ID for a Set.
-	// This field is internally managed and included in a Set's meta data.
-	Uuid string `json:"uuid"`
-
-	// Name is the name of a Set. As the developer, you'll use this field often.
-	Name string `json:"name"`
-
-	// CTime (Created Time) is the time at which a Set was created.
-	// This field is internally managed and included in a Set's meta data.
-	CTime string `json:"cTime"`
-
-	// UTime (Updated Time) is the time at which a Set was last changed.
-	// This field is internally managed and included in a Set's meta data.
-	UTime string `json:"mTime"`
-
-	// Location is the directory path to where the set is stored on disk.
-	// By default, this is managed internally by StackDB, however, if you
-	// are building on top of StackDB this may be helpful to override.
-	Location string `json:"location"`
+	// Header contains metadata for a set.
+	Header Header
 
 	// Data is the data held within a Set.
 	Data map[string]Data `json:"data"`
@@ -42,26 +23,16 @@ type Set struct {
 // Accepts positional arguments: name, uuid, location string.
 //
 // Note: To save the returned set to disk use the Persist method.
-func NewSet(args ...string) (*Set, error) {
-	if len(args) == 0 {
-		return nil, errors.New("no name provided for new Set.")
+func NewSet(name, version, pk, id string) (*Set, error) {
+	if name == "" {
+		// TODO: Eventially, this should also log to the error log
+		return nil, errors.New("No name provided")
 	}
+
+	newHeader := newHeader(name, version, pk, id)
 
 	newSet := Set{
-		Uuid:     utils.GetUuid(),
-		CTime:    time.Now().String(),
-		UTime:    time.Now().String(),
-		Location: os.Getenv("DEFAULT_DATA_LOCATION"),
-	}
-
-	newSet.Name = args[0]
-
-	if len(args) >= 2 {
-		newSet.Uuid = args[1]
-	}
-
-	if len(args) >= 3 {
-		newSet.Location = args[2]
+		Header: *newHeader,
 	}
 
 	return &newSet, nil
@@ -69,23 +40,13 @@ func NewSet(args ...string) (*Set, error) {
 
 // Read provides access to a Set's meta data.
 func (c *Set) Read() (*Set, error) {
-	meta := Set{
-		Uuid:  c.Uuid,
-		Name:  c.Name,
-		CTime: c.CTime,
-		UTime: c.UTime,
-	}
+	meta := Set{}
 	return &meta, nil
 }
 
 // Edit provides a way to edit a Set's meta data.
 func (c *Set) Edit() (*Set, error) {
-	meta := Set{
-		Uuid:  c.Uuid,
-		Name:  c.Name,
-		CTime: c.CTime,
-		UTime: c.UTime,
-	}
+	meta := Set{}
 	return &meta, nil
 }
 

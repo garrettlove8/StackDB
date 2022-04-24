@@ -49,6 +49,6 @@ SDBL is under development, more to come...
 As this is a learning / passion project, I am not currently looking for contribution.
 
 ## To-Do
-[] Remove Ginko and Gomega and use the standard testing library, along with Testify and Mockery where necessary
+- [ ] Remove Ginko and Gomega and use the standard testing library, along with Testify and Mockery where necessary
 
-[] Running `go install` does seem to make the program usable via the `sdb` command
+- [ ] Running `go install` does seem to make the program usable via the `sdb` command

@@ -18,7 +18,7 @@ After you've run these two commands, StackDB will have been successfully install
 
 Last, you'll need to run the StackDB setup process. To do so, run the following:
 
-```json
+```bash
 sdb setup
 ```
 

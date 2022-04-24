@@ -4,7 +4,7 @@
 
 # StackDB
 
-A "stackable" database that prioritizes (in no particular order) ease of use, security, performance, and adaptability.
+A "stackable" database that prioritizes (in no particular order) ease of use, performance, adaptability, and scalability.
 
 ## Installation
 To install and setup StackDB, you first want to download the desired reslease version from [here](https://github.com/garrettlove8/StackDB/releases). After that's complete, run the following commands:
@@ -47,3 +47,8 @@ SDBL is under development, more to come...
 
 ## Contributing
 As this is a learning / passion project, I am not currently looking for contribution.
+
+## To-Do
+[ ] Remove Ginko and Gomega and use the standard testing library, along with Testify and Mockery where necessary
+
+[ ] Running `go install` does seem to make the program usable via the `sdb` command

@@ -1,4 +1,4 @@
-package set
+package collections
 
 import (
 	"StackDB/internal/utils"
@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-// Sets are the same as those in many NoSQL database and are akin to tables in relational databases.
+// Collections are the same as those in many NoSQL database and are akin to tables in relational databases.
 // They privde an easy and logical way to separate data with a database
-type Set struct {
+type Collection struct {
 	// Uuid (Universal Unique Identifier) is the ID for a Set.
 	// This field is internally managed and included in a Set's meta data.
 	Uuid string `json:"uuid"`
@@ -42,12 +42,12 @@ type Set struct {
 // Accepts positional arguments: name, uuid, location string.
 //
 // Note: To save the returned set to disk use the Persist method.
-func NewSet(args ...string) (*Set, error) {
+func NewSet(args ...string) (*Collection, error) {
 	if len(args) == 0 {
-		return nil, errors.New("no name provided for new Set.")
+		return nil, errors.New("no name provided for new Set")
 	}
 
-	newSet := Set{
+	newSet := Collection{
 		Uuid:     utils.GetUuid(),
 		CTime:    time.Now().String(),
 		UTime:    time.Now().String(),
@@ -68,8 +68,8 @@ func NewSet(args ...string) (*Set, error) {
 }
 
 // Read provides access to a Set's meta data.
-func (c *Set) Read() (*Set, error) {
-	meta := Set{
+func (c *Collection) Read() (*Collection, error) {
+	meta := Collection{
 		Uuid:  c.Uuid,
 		Name:  c.Name,
 		CTime: c.CTime,
@@ -79,8 +79,8 @@ func (c *Set) Read() (*Set, error) {
 }
 
 // Edit provides a way to edit a Set's meta data.
-func (c *Set) Edit() (*Set, error) {
-	meta := Set{
+func (c *Collection) Edit() (*Collection, error) {
+	meta := Collection{
 		Uuid:  c.Uuid,
 		Name:  c.Name,
 		CTime: c.CTime,
@@ -90,26 +90,26 @@ func (c *Set) Edit() (*Set, error) {
 }
 
 // Delete provides a way to delete a Set from a database.
-func (c *Set) Delete() error {
+func (c *Collection) Delete() error {
 	return nil
 }
 
 // Delete provides a way to delete a Set from a database.
-func (c *Set) Persist() error {
+func (c *Collection) Persist() error {
 	return nil
 }
 
 // Delete provides a way to delete a Set from a database.
-func (c *Set) Load() (*Set, error) {
+func (c *Collection) Load() (*Collection, error) {
 	return nil, nil
 }
 
 // Delete provides a way to delete a Set from a database.
-func (c *Set) Insert(data *Data) (*Set, error) {
+func (c *Collection) Insert(data *Data) (*Collection, error) {
 	return nil, nil
 }
 
-func saveDbFile(file *os.File, col *Set) error {
+func saveDbFile(file *os.File, col *Collection) error {
 	// Convert database struct back to json
 	databaseJson, err := json.Marshal(col)
 	if err != nil {

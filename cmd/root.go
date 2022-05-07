@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"StackDB/internal/set"
+	"StackDB/internal/collections"
 	"StackDB/internal/setup"
 	"errors"
 	"fmt"
@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var systemCollection *set.Set
-var activeCollection *set.Set
+var systemCollection *collections.Collection
+var activeCollection *collections.Collection
 
 var rootCmd = &cobra.Command{
 	Use:   "sdb",

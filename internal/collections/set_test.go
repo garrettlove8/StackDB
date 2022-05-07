@@ -1,7 +1,7 @@
-package set_test
+package collections_test
 
 import (
-	"StackDB/internal/set"
+	"StackDB/internal/collections"
 	"errors"
 
 	. "github.com/onsi/ginkgo"
@@ -19,7 +19,7 @@ var _ = Describe("Sets", func() {
 	Describe("Successfully create new Set", func() {
 		Context("When using default values", func() {
 			It("should have correct value / non-nil propety values", func() {
-				newCol, _ := set.NewSet("setName")
+				newCol, _ := collections.NewSet("setName")
 
 				Expect(newCol.Name).To(Equal("setName"))
 				Expect(newCol.Uuid).NotTo(BeNil())
@@ -29,7 +29,7 @@ var _ = Describe("Sets", func() {
 		})
 		Context("When using custom values", func() {
 			It("should have used the custom values", func() {
-				newCol, _ := set.NewSet("setName", "setUuid", "setLocation")
+				newCol, _ := collections.NewSet("setName", "setUuid", "setLocation")
 				Expect(newCol.Name).To(Equal("setName"))
 				Expect(newCol.Uuid).To(Equal("setUuid"))
 				Expect(newCol.Location).To(Equal("setLocation"))
@@ -39,7 +39,7 @@ var _ = Describe("Sets", func() {
 	Describe("Unsuccessfully create new Set", func() {
 		Context("When not supplying a name", func() {
 			It("should return an error indicating that no name was provided", func() {
-				_, err := set.NewSet()
+				_, err := collections.NewSet()
 
 				wantedErr := errors.New("no name provided for new Set.")
 				Expect(err).To(Equal(wantedErr))

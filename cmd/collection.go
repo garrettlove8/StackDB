@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"StackDB/internal/set"
+	"StackDB/internal/collections"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -13,7 +13,7 @@ func init() {
 }
 
 var collectionCmd = &cobra.Command{
-	Use:   "collection",
+	Use:   "collections",
 	Short: "The collection command allows you to interact with any of the collections in the active database.",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("This is the collection command")
@@ -33,10 +33,10 @@ var createCollectionCmd = &cobra.Command{
 		fmt.Println("ARGS: ", args)
 
 		if len(args) < 1 {
-			return fmt.Errorf("Not enough arguments")
+			return fmt.Errorf("not enough arguments")
 		}
 
-		newCollection, _ := set.NewSet(args...)
+		newCollection, _ := collections.NewSet(args...)
 		newCollection.Name = args[0]
 
 		// _, err := newCollection.Create()

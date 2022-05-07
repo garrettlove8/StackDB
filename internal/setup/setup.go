@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"StackDB/internal/set"
+	"StackDB/internal/collections"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -38,7 +38,7 @@ func Setup() error {
 		return err
 	}
 
-	systemSets, err := set.NewSet("sets")
+	systemSets, err := collections.NewSet("sets")
 	if err != nil {
 		return err
 	}

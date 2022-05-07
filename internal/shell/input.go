@@ -1,7 +1,7 @@
 package shell
 
 import (
-	"StackDB/internal/set"
+	"StackDB/internal/collections"
 	"bufio"
 	"errors"
 	"fmt"
@@ -11,8 +11,8 @@ import (
 )
 
 var Open bool = true
-var systemCollection *set.Set
-var activeCollection *set.Set
+var systemCollection *collections.Collection
+var activeCollection *collections.Collection
 
 // Start load the stackdb database into memory allowing the user
 // to begin using StackDB. After that, it starts the StackDB shell.
@@ -47,7 +47,7 @@ func read() error {
 }
 
 func loadSystemDb() error {
-	wantedDb := set.Set{
+	wantedDb := collections.Collection{
 		Name: "stackdb",
 	}
 
@@ -104,19 +104,19 @@ func handleUse(words []string) error {
 		return nil
 	}
 
-	wantedDb := set.Set{
+	wantedDb := collections.Collection{
 		Name: words[1],
 	}
 
 	var err error
 	activeCollection, err = wantedDb.Load()
 	if err != nil {
-		newDatabase, _ := set.NewSet(words[1])
+		newDatabase, _ := collections.NewSet(words[1])
 
 		body := make(map[string][]byte)
 		body["name"] = []byte(newDatabase.Name)
 
-		newData := set.NewData()
+		newData := collections.NewData()
 		newData.CTime = time.Now().String()
 		newData.UTime = time.Now().String()
 		newData.Body = body
@@ -128,7 +128,7 @@ func handleUse(words []string) error {
 			return fmt.Errorf(`
 			database has been created,
 			however there was an error adding the new database to the tracking system: %v.
-			It is recommended to delete the new database and fix the tracking issue before recreating it.`,
+			It is recommended to delete the new database and fix the tracking issue before recreating it`,
 				err)
 		}
 
@@ -139,7 +139,7 @@ func handleUse(words []string) error {
 			return fmt.Errorf(`
 			database has been created,
 			however there was an error persisting the new database to the tracking system: %v.
-			It is recommended to delete the new database and fix the tracking issue before recreating it.`,
+			It is recommended to delete the new database and fix the tracking issue before recreating it`,
 				err)
 		}
 	}

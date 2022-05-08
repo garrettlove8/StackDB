@@ -36,7 +36,7 @@ var createCollectionCmd = &cobra.Command{
 			return fmt.Errorf("not enough arguments")
 		}
 
-		newCollection, _ := collections.NewSet(args...)
+		newCollection, _ := collections.NewCollection(args...)
 		newCollection.Name = args[0]
 
 		// _, err := newCollection.Create()

@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"StackDB/internal/collections"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,7 +12,8 @@ import (
 // was already installed it returns nil allowing for the
 // database to start up normally.
 func Setup() error {
-	if isSetup := CheckSetup(); isSetup {
+	isSetup := CheckSetup()
+	if isSetup {
 		fmt.Println("StackDB has already been setup")
 		return nil
 	}
@@ -38,15 +38,17 @@ func Setup() error {
 		return err
 	}
 
-	systemSets, err := collections.NewSet("sets")
-	if err != nil {
-		return err
-	}
+	// systemCollection, err := collections.NewCollection("collectiions")
+	// if err != nil {
+	// 	return err
+	// }
 
-	err = systemSets.Persist()
-	if err != nil {
-		return err
-	}
+	// err = systemCollection.Persist()
+	// if err != nil {
+	// 	return err
+	// }
+
+	fmt.Println("Setup process complete. You can now use StackDB")
 
 	return nil
 }
@@ -54,11 +56,20 @@ func Setup() error {
 // CheckSetup checks to see if the StackDB setup process has been
 // previously run.
 func CheckSetup() bool {
-	if _, err := os.Stat("~/sdb"); !os.IsNotExist(err) {
-		return true
+	homepath, _ := os.UserHomeDir()
+	err := os.Chdir(homepath)
+	if err != nil {
+		fmt.Println("1. Unable to check setup status, see logs") // TODO: Logs this to DB logs
 	}
 
-	return false
+	_, err = os.Getwd()
+	if err != nil {
+		fmt.Println("2. Unable to check setup status, see logs") // TODO: Logs this to DB logs
+	}
+
+	_, err = os.Stat("./sdb")
+
+	return !os.IsNotExist(err)
 }
 
 func setupDirStructure() error {
@@ -106,8 +117,8 @@ func touchConfigFile() (*os.File, error) {
 }
 
 func getConfigContent() ([]byte, error) {
-	pwd, _ := os.Getwd()
-	configBytes, err := ioutil.ReadFile(pwd + "/configs/" + os.Getenv("VERSION") + "/stackdb.json")
+	// TODO: Change path here
+	configBytes, err := ioutil.ReadFile("/Users/garrettlove/Development/StackDB/configs/" + os.Getenv("VERSION") + "/stackdb.json")
 	if err != nil {
 		return nil, err
 	}

@@ -19,7 +19,5 @@ var setupCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println(err)
 		}
-
-		fmt.Println("Setup process complete. You can now use StackDB")
 	},
 }

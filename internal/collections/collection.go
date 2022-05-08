@@ -2,8 +2,11 @@ package collections
 
 import (
 	"StackDB/internal/utils"
+	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 )
@@ -11,63 +14,63 @@ import (
 // Collections are the same as those in many NoSQL database and are akin to tables in relational databases.
 // They privde an easy and logical way to separate data with a database
 type Collection struct {
-	// Uuid (Universal Unique Identifier) is the ID for a Set.
-	// This field is internally managed and included in a Set's meta data.
+	// Uuid (Universal Unique Identifier) is the ID for a Collection.
+	// This field is internally managed and included in a Collection's meta data.
 	Uuid string `json:"uuid"`
 
-	// Name is the name of a Set. As the developer, you'll use this field often.
+	// Name is the name of a Collection. As the developer, you'll use this field often.
 	Name string `json:"name"`
 
-	// CTime (Created Time) is the time at which a Set was created.
-	// This field is internally managed and included in a Set's meta data.
+	// CTime (Created Time) is the time at which a Collection was created.
+	// This field is internally managed and included in a Collection's meta data.
 	CTime string `json:"cTime"`
 
-	// UTime (Updated Time) is the time at which a Set was last changed.
-	// This field is internally managed and included in a Set's meta data.
+	// UTime (Updated Time) is the time at which a Collection was last changed.
+	// This field is internally managed and included in a Collection's meta data.
 	UTime string `json:"mTime"`
 
-	// Location is the directory path to where the set is stored on disk.
+	// Location is the directory path to where the Collection is stored on disk.
 	// By default, this is managed internally by StackDB, however, if you
 	// are building on top of StackDB this may be helpful to override.
 	Location string `json:"location"`
 
-	// Data is the data held within a Set.
+	// Data is the data held within a Collection.
 	Data map[string]Data `json:"data"`
 }
 
-// NewSet facilitates the creation of a new Set in a database.
-// It's job is to create the necessary directories for the new Set,
+// NewCollection facilitates the creation of a new Collection in a database.
+// It's job is to create the necessary directories for the new Collection,
 // after which it handles updating the its database to account for itself.
 //
 // Accepts positional arguments: name, uuid, location string.
 //
-// Note: To save the returned set to disk use the Persist method.
-func NewSet(args ...string) (*Collection, error) {
+// Note: To save the returned Collection to disk use the Persist method.
+func NewCollection(args ...string) (*Collection, error) {
 	if len(args) == 0 {
-		return nil, errors.New("no name provided for new Set")
+		return nil, errors.New("no name provided for new Collection")
 	}
 
-	newSet := Collection{
+	newCollection := Collection{
 		Uuid:     utils.GetUuid(),
 		CTime:    time.Now().String(),
 		UTime:    time.Now().String(),
 		Location: os.Getenv("DEFAULT_DATA_LOCATION"),
 	}
 
-	newSet.Name = args[0]
+	newCollection.Name = args[0]
 
 	if len(args) >= 2 {
-		newSet.Uuid = args[1]
+		newCollection.Uuid = args[1]
 	}
 
 	if len(args) >= 3 {
-		newSet.Location = args[2]
+		newCollection.Location = args[2]
 	}
 
-	return &newSet, nil
+	return &newCollection, nil
 }
 
-// Read provides access to a Set's meta data.
+// Read provides access to a Collection's meta data.
 func (c *Collection) Read() (*Collection, error) {
 	meta := Collection{
 		Uuid:  c.Uuid,
@@ -78,7 +81,7 @@ func (c *Collection) Read() (*Collection, error) {
 	return &meta, nil
 }
 
-// Edit provides a way to edit a Set's meta data.
+// Edit provides a way to edit a Collection's meta data.
 func (c *Collection) Edit() (*Collection, error) {
 	meta := Collection{
 		Uuid:  c.Uuid,
@@ -89,22 +92,57 @@ func (c *Collection) Edit() (*Collection, error) {
 	return &meta, nil
 }
 
-// Delete provides a way to delete a Set from a database.
+// Delete provides a way to delete a Collection from a database.
 func (c *Collection) Delete() error {
 	return nil
 }
 
-// Delete provides a way to delete a Set from a database.
-func (c *Collection) Persist() error {
+// Delete provides a way to delete a Collection from a database.
+func (c *Collection) Persist(file *os.File) error {
+	var colBytes bytes.Buffer
+
+	enc := gob.NewEncoder(&colBytes)
+	err := enc.Encode(c)
+	if err != nil {
+		fmt.Println("c.Load: could not persist collection: ", err)
+		return err
+	}
+
+	file.Write(colBytes.Bytes())
+
 	return nil
 }
 
-// Delete provides a way to delete a Set from a database.
-func (c *Collection) Load() (*Collection, error) {
-	return nil, nil
+// Delete provides a way to delete a Collection from a database.
+func (c *Collection) Load() (*os.File, *Collection, error) {
+	homepath, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println("Unable to load collection: ", err)
+		return nil, nil, err
+	}
+
+	// TODO: Change path to database configuration path
+	file, err := os.OpenFile(homepath+"/sdb/data/"+c.Name+".json", os.O_RDWR, 0777)
+	if err != nil {
+		fmt.Println("c.Load: could not load collection: ", err)
+		return nil, nil, err
+	}
+
+	col := Collection{}
+	var fileBytes []byte
+
+	_, err = file.Read(fileBytes)
+	if err != nil {
+		fmt.Println("c.Load: could not load collection: ", err)
+		return nil, nil, err
+	}
+
+	json.Unmarshal(fileBytes, &col)
+
+	return file, &col, nil
 }
 
-// Delete provides a way to delete a Set from a database.
+// Delete provides a way to delete a Collection from a database.
 func (c *Collection) Insert(data *Data) (*Collection, error) {
 	return nil, nil
 }

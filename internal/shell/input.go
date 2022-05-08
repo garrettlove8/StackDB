@@ -1,28 +1,26 @@
 package shell
 
 import (
-	"StackDB/internal/set"
+	"StackDB/internal/collections"
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
-	"time"
 )
 
 var Open bool = true
-var systemCollection *set.Set
-var activeCollection *set.Set
+var systemCollection *collections.Collection
+var activeCollection *collections.Collection
 
 // Start load the stackdb database into memory allowing the user
 // to begin using StackDB. After that, it starts the StackDB shell.
 func Start() error {
-	err := loadSystemDb()
-	if err != nil {
-		return err
-	}
+	// err := loadSystemDb()
+	// if err != nil {
+	// 	return err
+	// }
 
-	err = read()
+	err := read()
 	if err != nil {
 		return err
 	}
@@ -40,25 +38,24 @@ func read() error {
 
 		text = strings.TrimSuffix(text, "\n")
 		process(text)
-		fmt.Println()
 	}
 
 	return nil
 }
 
-func loadSystemDb() error {
-	wantedDb := set.Set{
-		Name: "stackdb",
-	}
+// func loadSystemDb() error {
+// 	wantedCollection := collections.Collection{
+// 		Name: "stackdb",
+// 	}
 
-	var err error
-	if systemCollection, err = wantedDb.Load(); err != nil {
-		errMsg := fmt.Sprintf("unable to load database %s", wantedDb.Name)
-		return errors.New(errMsg)
-	}
+// 	var err error
+// 	if systemCollection, err = wantedCollection.Load(); err != nil {
+// 		errMsg := fmt.Sprintf("unable to load database %s", wantedCollection.Name)
+// 		return errors.New(errMsg)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func process(input string) error {
 	command := newCommandNode()
@@ -85,6 +82,7 @@ func process(input string) error {
 }
 
 func determineKeyword(word string) bool {
+	// TODO: Would be more efficient to use a map
 	switch word {
 	case "db":
 		return true
@@ -104,44 +102,61 @@ func handleUse(words []string) error {
 		return nil
 	}
 
-	wantedDb := set.Set{
+	wantedCollection := collections.Collection{
 		Name: words[1],
 	}
 
 	var err error
-	activeCollection, err = wantedDb.Load()
+	_, _, err = wantedCollection.Load()
 	if err != nil {
-		newDatabase, _ := set.NewSet(words[1])
+		newCollection, _ := collections.NewCollection(words[1])
 
 		body := make(map[string][]byte)
-		body["name"] = []byte(newDatabase.Name)
+		body["name"] = []byte(newCollection.Name)
 
-		newData := set.NewData()
-		newData.CTime = time.Now().String()
-		newData.UTime = time.Now().String()
-		newData.Body = body
-
-		_, err = systemCollection.Insert(newData)
+		// newData := collections.NewData()
+		// newData.Body = body
+		homepath, err := os.UserHomeDir()
 		if err != nil {
-			// TODO: Idealy if there is an error here the process should be undone automatically.
-
-			return fmt.Errorf(`
-			database has been created,
-			however there was an error adding the new database to the tracking system: %v.
-			It is recommended to delete the new database and fix the tracking issue before recreating it.`,
-				err)
+			fmt.Println("Unable to create collection: ", err)
+			return err
 		}
 
-		err = systemCollection.Persist()
+		file, err := os.Create(homepath + "/sdb/data/" + newCollection.Name + ".json")
 		if err != nil {
-			// TODO: Idealy if there is an error here the process should be undone automatically.
-
-			return fmt.Errorf(`
-			database has been created,
-			however there was an error persisting the new database to the tracking system: %v.
-			It is recommended to delete the new database and fix the tracking issue before recreating it.`,
-				err)
+			fmt.Println("handUse:error: ", err)
+			return err
 		}
+
+		err = newCollection.Persist(file)
+		if err != nil {
+			fmt.Println("handUse:error: ", err)
+			return err
+		}
+
+		return err
+
+		// _, err = systemCollection.Insert(newData)
+		// if err != nil {
+		// 	// TODO: Idealy if there is an error here the process should be undone automatically.
+
+		// 	return fmt.Errorf(`
+		// 	database has been created,
+		// 	however there was an error adding the new database to the tracking system: %v.
+		// 	It is recommended to delete the new database and fix the tracking issue before recreating it`,
+		// 		err)
+		// }
+
+		// err = systemCollection.Persist()
+		// if err != nil {
+		// 	// TODO: Idealy if there is an error here the process should be undone automatically.
+
+		// 	return fmt.Errorf(`
+		// 	database has been created,
+		// 	however there was an error persisting the new database to the tracking system: %v.
+		// 	It is recommended to delete the new database and fix the tracking issue before recreating it`,
+		// 		err)
+		// }
 	}
 
 	return nil
